@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Administration from '../views/Administration'
+import WaitingRoom from '../views/WaitingRoom'
 import Game from '../views/Game'
 import Results from '../views/Results'
 
@@ -10,12 +11,17 @@ const routes = [
     component: Administration,
   },
   {
-    path: '/game',
+    path: '/waitingroom/:sessionId',
+    name: 'Waiting-Room',
+    component: WaitingRoom,
+  },
+  {
+    path: '/game/:sessionId',
     name: 'Game',
     component: Game,
   },
   {
-    path: '/results',
+    path: '/results/:sessionId',
     name: 'Results',
     component: Results,
   }

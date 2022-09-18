@@ -4,9 +4,9 @@
 
 <script>
 
-    export default {
-        name: 'Game-Page',
-        props: {
-        }
+export default {
+    name: 'Game-Page',
+    props: {
     }
-    </script>
+}
+</script>
