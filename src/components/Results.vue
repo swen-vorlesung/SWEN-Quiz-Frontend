@@ -1,15 +1,15 @@
 <template>
     <header>
-        <h3>{{participant}}</h3>
+        <h3>Results</h3>
     </header>
 </template>
   
 <script>
 
 export default {
-    name: 'Header-Item',
+    name: 'Results-Item',
     props: {
-        participant: String
+        participants: []
     }
 }
 </script>

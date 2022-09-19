@@ -22,7 +22,8 @@ export default {
                 method: "POST"
             });
             const data = await res.json()
-            this.$router.push(`/waitingroom/${data.sessionId }`)
+            this.$emit('connect', data.sessionId)
+            this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
         },
         async fetchQuizzes() {
             const res = await fetch('http://localhost:9009/quizzes')
