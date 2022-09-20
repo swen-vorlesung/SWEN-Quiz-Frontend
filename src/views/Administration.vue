@@ -16,6 +16,7 @@ export default {
             quizzes: [],
         }
     },
+    inheritAttrs: false,
     methods: {
         async createQuizSession(quizId) {
             const res = await fetch(`http://localhost:9009/quizzes/${quizId}`, {

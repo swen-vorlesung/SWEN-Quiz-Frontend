@@ -1,13 +1,9 @@
 <template>
   <div class="container">
     <Header />
-    <router-view 
-      :participantsUpdatedEvent="participantsUpdatedEvent"
-      :quizStateUpdatedEvent="quizStateUpdatedEvent"
-      :resultsUpdatedEvent="resultsUpdatedEvent"
-      :newQuestionEvent="newQuestionEvent"
-      :connected="connected"
-      @connect="connect"></router-view>
+    <router-view :participantsUpdatedEvent="participantsUpdatedEvent" :quizStateUpdatedEvent="quizStateUpdatedEvent"
+      :resultsUpdatedEvent="resultsUpdatedEvent" :newQuestionEvent="newQuestionEvent" :connected="connected"
+      :user="user" :sessionId="sessionId" @connect="connect" @setUser="setUser"></router-view>
     <Footer />
   </div>
 </template>
@@ -29,13 +25,16 @@ export default {
       participantsUpdatedEvent: Object,
       quizStateUpdatedEvent: Object,
       resultsUpdatedEvent: Object,
-      newQuestionEvent: Object
+      newQuestionEvent: Object,
+      user: String,
+      sessionId: String
     }
   },
-  emits: ['connect'],
+  emits: ['connect', 'setUser'],
   methods: {
     connect(sessionId) {
       console.log(sessionId)
+      this.sessionId = sessionId
       this.socket = new SockJS("http://localhost:9009/quiz-socket");
       this.stompClient = Stomp.over(this.socket);
       this.stompClient.connect(
@@ -46,16 +45,16 @@ export default {
           this.stompClient.subscribe(`/sessions/${sessionId}`, tick => {
             var event = JSON.parse(tick.body)
             if (event.eventName === 'ParticipantsUpdatedEvent') {
-                this.participantsUpdatedEvent = event
+              this.participantsUpdatedEvent = event
             }
             if (event.eventName === 'QuizStateUpdatedEvent') {
-                this.quizStateUpdatedEvent = event;
+              this.quizStateUpdatedEvent = event;
             }
             if (event.eventName === 'ResultsUpdatedEvent') {
-                this.resultsUpdatedEvent = event;
+              this.resultsUpdatedEvent = event;
             }
             if (event.eventName === 'NewQuestionEvent') {
-                this.newQuestionEvent = event;
+              this.newQuestionEvent = event;
             }
           });
         },
@@ -65,12 +64,18 @@ export default {
         }
       );
     },
+    setUser(username) {
+      this.user = username
+    },
     disconnect() {
       if (this.stompClient) {
         this.stompClient.disconnect();
       }
       this.connected = false;
     },
+  },
+  created() {
+    this.user = null
   }
 }
 </script>

@@ -4,7 +4,7 @@
     <div class='task' :key="participant" v-for="participant in participants">
         <Participant :participant="participant"></Participant>
     </div>
-    <form @submit="onSubmit" class="add-form">
+    <form @submit="onSubmit" class="add-form" v-show="!this.user">
         <div class="form-control">
             <label>NickName</label>
             <input type="text" v-model="nickname" name="nickname" placeholder="Add NickName" />
@@ -23,12 +23,13 @@ export default {
     props: {
         connected: Boolean,
         participantsUpdatedEvent: Object,
-        quizStateUpdatedEvent: Object
+        quizStateUpdatedEvent: Object,
+        user: String,
+        sessionId: String,
     },
     data() {
         return {
-            sessionId: String,
-            nickname: '',
+            nickname: String,
             participants: []
         }
     },
@@ -58,6 +59,8 @@ export default {
                 headers: { 'Content-Type': 'application/json;charset=utf-8' },
                 body: JSON.stringify({ 'nickname': this.nickname })
             });
+
+            this.$emit('setUser', this.nickname)
         },
         async startQuiz() {
             await fetch(`http://localhost:9009/sessions/${this.sessionId}/quiz/start`, {
@@ -70,10 +73,11 @@ export default {
         }
     },
     created() {
-        this.sessionId = this.$route.params.sessionId
         if (!this.connected) {
-            this.$emit('connect', this.sessionId)
+            this.$emit('connect', this.$route.params.sessionId)
         }
+        this.nickname = this.user
+        console.log('User: ' + this.nickname)
     }
 }
 
