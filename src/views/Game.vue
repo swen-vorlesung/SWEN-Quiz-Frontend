@@ -2,6 +2,7 @@
     <h1>Quiz</h1>
     <Quiz :user="user" :sessionId="sessionId" :question="question" v-show="!showResults"></Quiz>
     <Results :results="results" :finished="finished" v-show="showResults"></Results>
+    <Button @click="nextQuestion" v-show="showResults">Next Question</Button>
 </template>
 
 <script>
@@ -49,7 +50,11 @@ export default {
         },
     },
     methods: {
-
+        async nextQuestion() {
+            await fetch(`http://localhost:9009/sessions/${this.sessionId}/quiz/next`, {
+                method: "POST"
+            });
+        }
     },
     created() {
         this.showResults = false
