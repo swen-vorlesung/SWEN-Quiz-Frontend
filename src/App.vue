@@ -33,14 +33,13 @@ export default {
   emits: ['connect', 'setUser'],
   methods: {
     connect(sessionId) {
-      console.log(sessionId)
+      this.connected = true;
       this.sessionId = sessionId
       this.socket = new SockJS("http://localhost:9009/quiz-socket");
       this.stompClient = Stomp.over(this.socket);
       this.stompClient.connect(
         {},
         frame => {
-          this.connected = true;
           console.log(frame)
           this.stompClient.subscribe(`/sessions/${sessionId}`, tick => {
             var event = JSON.parse(tick.body)

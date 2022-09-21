@@ -1,6 +1,6 @@
 <template>
     <h1>Quiz</h1>
-    <Quiz :user="user" :sessionId="sessionId" :question="question" v-show="!showResults"></Quiz>
+    <Quiz :user="user" :sessionId="sessionId" :question="question" :countdown="countdown" v-show="!showResults"></Quiz>
     <Results :results="results" :finished="finished" v-show="showResults"></Results>
     <Button @click="nextQuestion" v-show="showResults">Next Question</Button>
 </template>
@@ -28,14 +28,17 @@ export default {
             question: Object,
             results: Object,
             showResults: Boolean,
-            finished: Boolean
+            finished: Boolean,
+            countdown: Number
         }
     },
     watch: {
         newQuestionEvent: function (event) {
-            console.log(event.question)
+            console.log(event)
             this.showResults = false
             this.question = event.question
+            this.countdown = this.question.answerTime
+            this.countDownTimer()
         },
         resultsUpdatedEvent: function (event) {
             console.log(event)
@@ -54,6 +57,14 @@ export default {
             await fetch(`http://localhost:9009/sessions/${this.sessionId}/quiz/next`, {
                 method: "POST"
             });
+        },
+        countDownTimer() {
+            if (this.countdown > 0) {
+                setTimeout(() => {
+                    this.countdown -= 1
+                    this.countDownTimer()
+                }, 1000)
+            }
         }
     },
     created() {

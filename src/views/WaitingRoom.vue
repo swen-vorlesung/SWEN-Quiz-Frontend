@@ -77,7 +77,6 @@ export default {
             this.$emit('connect', this.$route.params.sessionId)
         }
         this.nickname = this.user
-        console.log('User: ' + this.nickname)
     }
 }
 

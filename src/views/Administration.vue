@@ -22,6 +22,7 @@ export default {
             const res = await fetch(`http://localhost:9009/quizzes/${quizId}`, {
                 method: "POST"
             });
+            console.log('createQuizSession')
             const data = await res.json()
             this.$emit('connect', data.sessionId)
             this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
