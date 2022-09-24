@@ -1,7 +1,7 @@
 <template>
     <h1>Quiz</h1>
     <Quiz :user="user" :sessionId="sessionId" :question="question" :countdown="countdown" v-show="!showResults"></Quiz>
-    <Results :results="results" :finished="finished" v-show="showResults"></Results>
+    <Results :results="results" :finished="finished" :user="user" v-show="showResults"></Results>
     <Button @click="nextQuestion" v-show="showResults">Next Question</Button>
 </template>
 
@@ -13,7 +13,6 @@ export default {
     name: 'Game-Page',
     props: {
         connected: Boolean,
-        quizStateUpdatedEvent: Object,
         newQuestionEvent: Object,
         resultsUpdatedEvent: Object,
         user: String,
@@ -44,13 +43,8 @@ export default {
             console.log(event)
             this.showResults = true
             this.results = event.scores
-        },
-        quizStateUpdatedEvent: function (event) {
-            console.log(event)
-            if (event.state === 'FINISHED') {
-                this.finished = true
-            }
-        },
+            this.finished = event.finished
+        }
     },
     methods: {
         async nextQuestion() {
