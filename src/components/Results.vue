@@ -8,6 +8,7 @@
         <div class="modal-overlay" v-show="finished">
             <div class="modal">
                 <h6>Glückwunsch! Du hast den {{place}}. Platz gemacht!</h6>
+                <!-- Konfetti animation -->
             </div>
         </div>
     </header>
