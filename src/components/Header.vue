@@ -14,6 +14,10 @@ export default {
 </script>
   
 <style scoped>
-
+h1 {
+  color: white;
+  text-align: center;
+  font-family: 'CaviarDreamsBold';
+}
 </style>
   
