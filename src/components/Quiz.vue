@@ -28,6 +28,8 @@
 
 <script>
 
+import Counter from "@/components/Counter";
+
 export default {
   name: 'Quiz-Item',
   props: {
@@ -35,6 +37,9 @@ export default {
     user: String,
     sessionId: String,
     countdown: Number
+  },
+  components: {
+    Counter
   },
   data() {
     return {
