@@ -11,16 +11,21 @@
 
 export default {
   name: 'Admin-Page',
+  props: {
+    token: String
+  },
   data() {
     return {
       quizzes: []
     }
   },
-  inheritAttrs: false,
   methods: {
     async createQuizSession(quizId) {
       const res = await fetch(`https://swen-quiz-backend.azurewebsites.net/quizzes/${quizId}`, {
-        method: "POST"
+        method: "POST",
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        },
       });
       console.log('createQuizSession')
       const data = await res.json()
@@ -28,7 +33,12 @@ export default {
       this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
     },
     async fetchQuizzes() {
-      const res = await fetch('https://swen-quiz-backend.azurewebsites.net/quizzes')
+      const res = await fetch('https://swen-quiz-backend.azurewebsites.net/quizzes', {
+        method: "GET",
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        },
+      })
       const data = await res.json()
       return data;
     }

@@ -1,7 +1,7 @@
 <template>
-  <Quiz :user="user" :sessionId="sessionId" :question="question" :countdown="countdown" v-show="!showResults"></Quiz>
-  <Results :results="results" :finished="finished" :user="user" v-show="showResults"></Results>
-  <Button @click="nextQuestion" class="btn btn-next-question" v-show="showResults" v-if="!finished">Next Question</Button>
+  <Quiz :user="user" :sessionId="sessionId" :question="question" :countdown="countdown" :isAdmin="isAdmin" v-show="!showResults"></Quiz>
+  <Results :results="results" :finished="finished" :user="user" :isAdmin="isAdmin" v-show="showResults"></Results>
+  <Button @click="nextQuestion" class="btn btn-next-question" v-show="showResults && isAdmin" v-if="!finished">Next Question</Button>
 </template>
 
 <script>
@@ -15,7 +15,9 @@ export default {
     newQuestionEvent: Object,
     resultsUpdatedEvent: Object,
     user: String,
-    sessionId: String
+    sessionId: String,
+    token: String,
+    isAdmin: Boolean
   },
   components: {
     Quiz,
@@ -48,7 +50,10 @@ export default {
   methods: {
     async nextQuestion() {
       await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/quiz/next`, {
-        method: "POST"
+        method: "POST",
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        },
       });
     },
     countDownTimer() {

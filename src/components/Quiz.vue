@@ -12,7 +12,7 @@
         </div>
         <div class="submit-wrapper">
           <Counter :countdown="countdown"/>
-          <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
+          <input type="submit" value="Submit" class="btn btn-block btn-submit" v-show="!isAdmin"/>
         </div>
       </form>
     </div>
@@ -36,7 +36,9 @@ export default {
     question: Object,
     user: String,
     sessionId: String,
-    countdown: Number
+    countdown: Number,
+    token: String,
+    isAdmin: Boolean
   },
   components: {
     Counter
@@ -62,7 +64,10 @@ export default {
 
       await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/participants/${this.user}/answers`, {
         method: "POST",
-        headers: {'Content-Type': 'application/json;charset=utf-8'},
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+          'Authorization': 'Bearer ' + this.token
+        },
         body: JSON.stringify(answers)
       });
       this.answerIds = []

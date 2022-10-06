@@ -1,6 +1,6 @@
 <template>
   <header>
-    <div class="result-wrapper" v-show="finished">
+    <div class="result-wrapper" v-show="finished && !isAdmin">
       <h2>Glückwunsch! Du hast den {{ place }}. Platz gemacht!</h2>
     </div>
     <h3>Ranking</h3>
@@ -17,7 +17,8 @@ export default {
   props: {
     results: [],
     finished: Boolean,
-    user: String
+    user: String,
+    isAdmin: Boolean
   },
   data() {
     return {

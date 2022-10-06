@@ -3,7 +3,8 @@
     <Header />
     <router-view :participantsUpdatedEvent="participantsUpdatedEvent" :quizStateUpdatedEvent="quizStateUpdatedEvent"
       :resultsUpdatedEvent="resultsUpdatedEvent" :newQuestionEvent="newQuestionEvent" :connected="connected"
-      :user="user" :sessionId="sessionId" @connect="connect" @setUser="setUser"></router-view>
+      :user="user" :token="token" :isAdmin="isAdmin" :sessionId="sessionId" 
+      @connect="connect" @setUser="setUser" @setToken="setToken" @setAdmin="setAdmin"></router-view>
     <Footer />
   </div>
 </template>
@@ -27,10 +28,12 @@ export default {
       resultsUpdatedEvent: Object,
       newQuestionEvent: Object,
       user: String,
-      sessionId: String
+      token: String,
+      sessionId: String,
+      isAdmin: Boolean 
     }
   },
-  emits: ['connect', 'setUser'],
+  emits: ['connect', 'setUser', 'setToken', 'setAdmin'],
   methods: {
     connect(sessionId) {
       this.connected = true;
@@ -66,6 +69,12 @@ export default {
     setUser(username) {
       this.user = username
     },
+    setToken(token) {
+      this.token = token
+    },
+    setAdmin(isAdmin) {
+      this.isAdmin = isAdmin
+    },
     disconnect() {
       if (this.stompClient) {
         this.stompClient.disconnect();
@@ -75,6 +84,7 @@ export default {
   },
   created() {
     this.user = null
+    this.isAdmin = false
   }
 }
 </script>

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import LogIn from '../views/LogIn'
 import Administration from '../views/Administration'
 import WaitingRoom from '../views/WaitingRoom'
 import Game from '../views/Game'
@@ -6,6 +7,11 @@ import Game from '../views/Game'
 const routes = [
   {
     path: '/',
+    name: 'LogIn',
+    component: LogIn,
+  },
+  {
+    path: '/admin',
     name: 'Administration',
     component: Administration,
   },

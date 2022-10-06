@@ -1,7 +1,7 @@
 <template>
   <h2>Quiz - {{ sessionId }}</h2>
-  <qrcode-vue :value="sessionId" :size="300" level="H" class="qr-code"/>
-  <form @submit="onSubmit" class="add-form" v-show="!this.user">
+  <qrcode-vue :value="sessionId" :size="300" level="H" class="qr-code" v-show="isAdmin"/>
+  <form @submit="onSubmit" class="add-form" v-show="!user && !isAdmin">
     <div class="form-control">
       <label>Nickname:</label>
       <input type="text" v-model="nickname" name="nickname" placeholder="Add NickName"/>
@@ -9,7 +9,7 @@
     <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
   </form>
   <Participant :participants="participants"></Participant>
-  <button @click="startQuiz()" class="btn btn-block btn-start">Start Quiz</button>
+  <button @click="startQuiz()" class="btn btn-block btn-start" v-show="isAdmin">Start Quiz</button>
 </template>
 
 <script>
@@ -24,6 +24,8 @@ export default {
     quizStateUpdatedEvent: Object,
     user: String,
     sessionId: String,
+    token: String,
+    isAdmin: Boolean
   },
   data() {
     return {
@@ -54,7 +56,10 @@ export default {
 
       await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/participants`, {
         method: "POST",
-        headers: {'Content-Type': 'application/json;charset=utf-8'},
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+          'Authorization': 'Bearer ' + this.token
+        },
         body: JSON.stringify({'nickname': this.nickname})
       });
 
@@ -62,7 +67,10 @@ export default {
     },
     async startQuiz() {
       await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/quiz/start`, {
-        method: "POST"
+        method: "POST",
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        },
       });
       this.redirectToGame()
     },
