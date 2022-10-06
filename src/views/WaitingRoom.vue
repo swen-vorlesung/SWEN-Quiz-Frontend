@@ -52,7 +52,7 @@ export default {
         return
       }
 
-      await fetch(`http://localhost:9009/sessions/${this.sessionId}/participants`, {
+      await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/participants`, {
         method: "POST",
         headers: {'Content-Type': 'application/json;charset=utf-8'},
         body: JSON.stringify({'nickname': this.nickname})
@@ -61,7 +61,7 @@ export default {
       this.$emit('setUser', this.nickname)
     },
     async startQuiz() {
-      await fetch(`http://localhost:9009/sessions/${this.sessionId}/quiz/start`, {
+      await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/quiz/start`, {
         method: "POST"
       });
       this.redirectToGame()

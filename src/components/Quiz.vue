@@ -28,8 +28,6 @@
 
 <script>
 
-import Counter from "@/components/Counter";
-
 export default {
   name: 'Quiz-Item',
   props: {
@@ -37,9 +35,6 @@ export default {
     user: String,
     sessionId: String,
     countdown: Number
-  },
-  components: {
-    Counter
   },
   data() {
     return {
@@ -60,7 +55,7 @@ export default {
       answers.answers = []
       this.answerIds.forEach((element) => answers.answers.push({id: element}))
 
-      await fetch(`http://localhost:9009/sessions/${this.sessionId}/participants/${this.user}/answers`, {
+      await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/participants/${this.user}/answers`, {
         method: "POST",
         headers: {'Content-Type': 'application/json;charset=utf-8'},
         body: JSON.stringify(answers)

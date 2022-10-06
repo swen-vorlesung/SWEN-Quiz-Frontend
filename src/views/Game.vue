@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     async nextQuestion() {
-      await fetch(`http://localhost:9009/sessions/${this.sessionId}/quiz/next`, {
+      await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/quiz/next`, {
         method: "POST"
       });
     },

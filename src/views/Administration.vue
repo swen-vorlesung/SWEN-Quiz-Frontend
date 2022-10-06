@@ -19,7 +19,7 @@ export default {
   inheritAttrs: false,
   methods: {
     async createQuizSession(quizId) {
-      const res = await fetch(`http://localhost:9009/quizzes/${quizId}`, {
+      const res = await fetch(`https://swen-quiz-backend.azurewebsites.net/quizzes/${quizId}`, {
         method: "POST"
       });
       console.log('createQuizSession')
@@ -28,7 +28,7 @@ export default {
       this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
     },
     async fetchQuizzes() {
-      const res = await fetch('http://localhost:9009/quizzes')
+      const res = await fetch('https://swen-quiz-backend.azurewebsites.net/quizzes')
       const data = await res.json()
       return data;
     }

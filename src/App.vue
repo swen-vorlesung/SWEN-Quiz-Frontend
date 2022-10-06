@@ -35,7 +35,7 @@ export default {
     connect(sessionId) {
       this.connected = true;
       this.sessionId = sessionId
-      this.socket = new SockJS("http://localhost:9009/quiz-socket");
+      this.socket = new SockJS("https://swen-quiz-backend.azurewebsites.net/quiz-socket");
       this.stompClient = Stomp.over(this.socket);
       this.stompClient.connect(
         {},
