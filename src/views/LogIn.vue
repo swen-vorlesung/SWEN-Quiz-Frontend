@@ -25,7 +25,7 @@ export default {
         async onSubmit(e) {
             e.preventDefault()
 
-            const res = await fetch(`https://swen-quiz-backend.azurewebsites.net/auth/login/`, {
+            const res = await fetch(`${this.$backendURL}/auth/login/`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json;charset=utf-8' },
                 body: JSON.stringify(

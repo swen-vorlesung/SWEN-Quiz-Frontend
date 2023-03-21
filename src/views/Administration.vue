@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     async createQuizSession(quizId) {
-      const res = await fetch(`https://swen-quiz-backend.azurewebsites.net/quizzes/${quizId}`, {
+      const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
         method: "POST",
         headers: {
           'Authorization': 'Bearer ' + this.token
@@ -33,7 +33,7 @@ export default {
       this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
     },
     async fetchQuizzes() {
-      const res = await fetch('https://swen-quiz-backend.azurewebsites.net/quizzes', {
+      const res = await fetch(`${this.$backendURL}/quizzes`, {
         method: "GET",
         headers: {
           'Authorization': 'Bearer ' + this.token

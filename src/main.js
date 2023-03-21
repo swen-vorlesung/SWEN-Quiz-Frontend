@@ -3,6 +3,8 @@ import App from './App.vue'
 
 import router from './router'
 
-createApp(App)
-  .use(router)
-  .mount('#app')
+const app = createApp(App)
+
+app.config.globalProperties.$backendURL = process.env.VUE_APP_BACKEND_BASE_URL
+app.use(router)
+app.mount('#app')

@@ -62,7 +62,7 @@ export default {
       answers.answers = []
       this.answerIds.forEach((element) => answers.answers.push({id: element}))
 
-      await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/participants/${this.user}/answers`, {
+      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/participants/${this.user}/answers`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json;charset=utf-8',

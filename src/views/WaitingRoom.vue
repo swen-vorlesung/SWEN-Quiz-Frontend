@@ -1,6 +1,6 @@
 <template>
   <h2>Quiz - {{ sessionId }}</h2>
-  <qrcode-vue :value="'https://swen-vorlesung.net/quiz/' + sessionId + '/waitingroom'" :size="300" level="H" class="qr-code" v-show="isAdmin"/>
+  <qrcode-vue :value="this.origin + '/'+ sessionId + '/waitingroom'" :size="300" level="H" class="qr-code" v-show="isAdmin"/>
   <form @submit="onSubmit" class="add-form" v-show="!user && !isAdmin">
     <div class="form-control">
       <label>Nickname:</label>
@@ -29,6 +29,7 @@ export default {
   },
   data() {
     return {
+      origin: window.location.origin,
       nickname: String,
       participants: []
     }
@@ -54,7 +55,7 @@ export default {
         return
       }
 
-      await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/participants`, {
+      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/participants/`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json;charset=utf-8',
@@ -66,7 +67,7 @@ export default {
       this.$emit('setUser', this.nickname)
     },
     async startQuiz() {
-      await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/quiz/start`, {
+      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/start`, {
         method: "POST",
         headers: {
           'Authorization': 'Bearer ' + this.token

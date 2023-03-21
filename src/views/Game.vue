@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     async nextQuestion() {
-      await fetch(`https://swen-quiz-backend.azurewebsites.net/sessions/${this.sessionId}/quiz/next`, {
+      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/next`, {
         method: "POST",
         headers: {
           'Authorization': 'Bearer ' + this.token
