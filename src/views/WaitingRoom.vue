@@ -58,8 +58,7 @@ export default {
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/participants/`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-          'Authorization': 'Bearer ' + this.token
+          'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify({'nickname': this.nickname})
       });
