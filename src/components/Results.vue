@@ -23,22 +23,42 @@ export default {
   data() {
     return {
       place: Number,
-      sortedResults: []
+      sortedResults: [],
+      isFinished: Boolean
     }
   },
   watch: {
     results: function (results) {
       this.sortedResults = this.sortResults(results);
+
+      if(this.isFinished)
+        this.place = this.getPlace(this.sortedResults)
     },
     finished: function (isFinished) {
-      if (isFinished) {
-        this.place = this.sortedResults.findIndex(r => r.nickname === this.user) + 1;
-      }
+      this.isFinished = isFinished
     }
   },
   methods: {
     sortResults(results) {
       return results.sort((n1, n2) => n2.score - n1.score)
+    },
+    getPlace(results) {
+      let place = 1;
+      let prevScore = null
+
+      for( const result of results){
+        if(prevScore == null){
+          prevScore = result.score
+        }
+
+        if(prevScore !== result.score) {
+          place++;
+          prevScore = result.score
+        }
+
+        if(result.nickname === this.user)
+          return place
+      }
     }
   }
 }
