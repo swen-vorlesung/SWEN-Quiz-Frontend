@@ -1,13 +1,22 @@
 <template>
-  <h2>Administration</h2>
-  <div class='task' :key="quiz.id" v-for="quiz in quizzes">
-    <h3>{{ quiz.name }}
-      <i @click="createQuizSession(quiz.id)" class="fa-solid fa-plus"></i>
-    </h3>
+  <!-- TODO: Make a button to enable the quiz form-->
+  <div hidden>
+    <h2>Administration</h2>
+    <div class='task' :key="quiz.id" v-for="quiz in quizzes">
+      <h3>{{ quiz.name }}
+        <i @click="createQuizSession(quiz.id)" class="fa-solid fa-plus"/>
+      </h3>
+    </div>
+    <div class=" add-new-quiz task fa-solid fa-plus">
+      Add new Quiz
+    </div>
   </div>
+
+  <CreateNewQuizForm/>
 </template>
 
 <script>
+import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
 
 export default {
   name: 'Admin-Page',
@@ -18,6 +27,9 @@ export default {
     return {
       quizzes: []
     }
+  },
+  components: {
+    CreateNewQuizForm: CreateNewQuizForm
   },
   methods: {
     async createQuizSession(quizId) {
@@ -49,7 +61,12 @@ export default {
 }
 </script>
 
-<style scope>
+<style>
+
+input::placeholder{
+  color: black;
+}
+
 .fa-plus {
   color: white;
   cursor: pointer;

@@ -2,12 +2,12 @@
     <form @submit="onSubmit" class="add-form">
         <div class="form-control">
             <label>Nickname:</label>
-            <input type="text" v-model="username" name="username" placeholder="Add NickName" />
+            <input type="text" v-model="username" name="username" placeholder="Add NickName" required/>
             <label>Password:</label>
-            <input type="password" v-model="password" name="password" />
+            <input type="password" v-model="password" name="password" required />
         </div>
         <input type="submit" value="Submit" class="btn btn-block btn-submit" />
-        <button  @click="useDemo"  class="btn btn-block btn-submit">Use Demo</button>
+        <button @click="useDemo"  class="btn btn-block btn-submit">Use Demo</button>
     </form>
 </template>
 
