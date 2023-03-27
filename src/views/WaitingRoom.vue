@@ -1,6 +1,6 @@
 <template>
   <h2>Quiz - {{ sessionId }}</h2>
-  <qrcode-vue :value="this.origin + '/'+ sessionId + '/waitingroom'" :size="300" level="H" class="qr-code" v-show="isAdmin"/>
+  <qrcode-vue :value="this.origin + '/quiz/'+ sessionId + '/waitingroom'" :size="300" level="H" class="qr-code" v-show="isAdmin"/>
   <form @submit="onSubmit" class="add-form" v-show="!user && !isAdmin">
     <div class="form-control">
       <label>Nickname:</label>
