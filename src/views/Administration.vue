@@ -1,18 +1,17 @@
 <template>
-  <!-- TODO: Make a button to enable the quiz form-->
-  <div hidden>
+  <div v-if="!showNewQuizForm">
     <h2>Administration</h2>
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
       <h3>{{ quiz.name }}
         <i @click="createQuizSession(quiz.id)" class="fa-solid fa-plus"/>
       </h3>
     </div>
-    <div class=" add-new-quiz task fa-solid fa-plus">
+    <div class="add-new-quiz task fa-solid fa-plus" @click="this.toggleShowNewQuizForm">
       Add new Quiz
     </div>
   </div>
 
-  <CreateNewQuizForm/>
+  <CreateNewQuizForm :token="token" v-if="showNewQuizForm" @finished_quiz_creation="this.finishQuizCreation"/>
 </template>
 
 <script>
@@ -20,12 +19,14 @@ import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
 
 export default {
   name: 'Admin-Page',
+  expose: ["cancelQuizCreation"],
   props: {
     token: String
   },
   data() {
     return {
-      quizzes: []
+      quizzes: [],
+      showNewQuizForm: Boolean
     }
   },
   components: {
@@ -53,10 +54,22 @@ export default {
       })
       const data = await res.json()
       return data;
+    },
+    toggleShowNewQuizForm(){
+      this.showNewQuizForm = !this.showNewQuizForm
+    },
+    async finishQuizCreation(finished){
+      if(finished)
+        this.quizzes = await this.fetchQuizzes();
+
+      this.toggleShowNewQuizForm()
     }
   },
   async created() {
     this.quizzes = await this.fetchQuizzes();
+  },
+  mounted() {
+    this.showNewQuizForm = false
   }
 }
 </script>
@@ -101,5 +114,10 @@ input::placeholder{
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.add-new-quiz {
+  width: 100%;
+  margin: auto;
 }
 </style>

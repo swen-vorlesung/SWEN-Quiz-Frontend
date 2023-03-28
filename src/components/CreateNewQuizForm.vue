@@ -1,23 +1,20 @@
 <template>
   <body>
     <h2>Create new Quiz</h2>
-    <form @submit="onSubmit" class="add-form">
+    <div class="add-form">
       <div class="form-control">
         <input type="text" v-model="quizName" placeholder="Enter quiz name" required>
-        <ol>
-          <li v-for="(index) in quizCount" :key="index">
-            <QuizForm></QuizForm>
-          </li>
-        </ol>
+        <QuestionForm v-for="(index) in quizCount" :key="index" ref="questionForms" :position="index"/>
         <input type="button" @click="quizCount++" value="Another Question">
       </div>
-      <input type="submit" value="Submit" class="btn btn-block btn-submit">
-    </form>
+      <input type="submit" value="Submit" @click="onSubmit" class="btn btn-block btn-submit"/>
+      <input type="button" value="Cancel" @click="onCancel" class="btn btn-block .form btn-cancel"/>
+    </div>
   </body>
 </template>
 
 <script>
-import QuizForm from "@/components/QuestionForm.vue";
+import QuestionForm from "@/components/QuestionForm.vue";
 
 export default {
   name: 'Create-New_Quiz',
@@ -27,30 +24,39 @@ export default {
       quizCount: Number
     }
   },
-  watch: {
-    question: function () {
-      this.showWaitingScreen = false
-    }
+  props: {
+    token: String
   },
   methods: {
     async onSubmit(e) {
       e.preventDefault()
 
-      let answers = {}
-      answers.answers = []
-      this.answerIds.forEach((element) => answers.answers.push({id: element}))
+      let questionList = []
+      this.$refs.questionForms.forEach(question => questionList.push(question.getQuestions()))
 
-      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/participants/${this.user}/answers`, {
+      const data = JSON.stringify({
+        "name":this.quizName,
+        "questions": questionList
+      })
+
+      const res = await fetch(`${this.$backendURL}/quizzes`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-          'Authorization': 'Bearer ' + this.token
+          'Authorization': 'Bearer ' + this.token,
+          'Content-Type': 'application/json;charset=utf-8'
         },
-        body: JSON.stringify(answers)
-      });
-      this.answerIds = []
+        body: data
+      })
 
-      this.showWaitingScreen = true;
+      // TODO: Validate response
+      console.log(res)
+
+      this.$emit('finished_quiz_creation', true)
+    },
+    onCancel(){
+      if(window.confirm("Are you sure you want to leave?\nYou will be loosing your entire progress")){
+        this.$emit('finished_quiz_creation', false)
+      }
     }
   },
   created() {
@@ -59,7 +65,7 @@ export default {
 
   },
   components: {
-    QuizForm
+    QuestionForm
   }
 }
 </script>
@@ -68,6 +74,8 @@ export default {
 
 li {
   color:white;
+  width: 90%;
+  margin: auto;
 }
 .form-control {
   margin: 20px 0;
@@ -83,6 +91,7 @@ li {
   padding: 5px 7px 5px 15px;
   font-size: 17px;
   border-radius: 15px;
+  border-style: none;
 }
 
 .form-control-check label {
@@ -109,12 +118,12 @@ label {
   margin-bottom: 10px;
 }
 
-li {
-  width: 90%;
-  margin: auto;
-}
-
 .btn-submit {
   background: #0071bc;
+}
+
+.btn-cancel {
+  background: white;
+  color: black;
 }
 </style>

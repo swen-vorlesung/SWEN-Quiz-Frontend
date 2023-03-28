@@ -1,13 +1,15 @@
 <template>
   <body>
-    <input placeholder="Question">
+    <div id="create-quiz-header">
+      <label id="position">{{this.position}}.</label>
+      <input placeholder="Question" v-model="question">
+    </div>
     <div id="answer-time-div">
         <label id="answer-time-text">Time:</label>
-        <input id="answer-time-input" type="number" value="0">
+        <input id="answer-time-input" type="number" v-model="answerTime">
     </div>
-
-    <div v-for="i in numberOfAnswers" :key="i" class="answer-form">
-      <AnswerForm></AnswerForm>
+    <div class="answer-form">
+      <AnswerForm v-for="i in numberOfAnswers" :key="i"  ref="answers"/>
     </div>
     <input type="button" @click="numberOfAnswers++" value="Another Answer" id="add_answer_button">
   </body>
@@ -18,22 +20,36 @@ import AnswerForm from "@/components/AnswerForm.vue";
 
 export default {
   name: 'Create-New_Quiz',
+  expose: ['getQuestions'],
+  props:{
+    position: Number
+  },
+  components: {
+    AnswerForm
+  },
   data() {
     return {
       question: String,
       answerTime: Number,
       numberOfAnswers: Number,
-      answerTimePlaceholderText: String
     }
   },
   created() {
     this.question = null
     this.answerTime = 0
-    this.numberOfAnswers = 1
-    this.answerTimePlaceholderText = "Enter Answer Time"
+    this.numberOfAnswers = 2
   },
-  components: {
-    AnswerForm
+  methods: {
+    getQuestions(){
+      let answerList = []
+      this.$refs.answers.forEach(answer => answerList.push(answer.getAnswer()))
+
+      return {
+        question: this.question,
+        answerTime: this.answerTime,
+        answers: answerList
+      }
+    }
   }
 }
 </script>
@@ -41,6 +57,7 @@ export default {
 <style scoped>
 * {
   color: white;
+  border-style: none;
 }
 
 .form-control label {
@@ -101,8 +118,19 @@ input {
   flex-direction: row;
 }
 
+#create-quiz-header{
+  display: flex;
+  flex-direction: row;
+}
+
+#position{
+  width: 5%;
+  padding: 0;
+  text-align: left;
+  align-self: center;
+}
+
 #answer-time-input{
-  width: 70%;
   margin: auto 2% auto;
 }
 
@@ -113,9 +141,9 @@ input {
 }
 
 #add_answer_button{
-  width: 90%;
-  height: 80%;
+  width: 86%;
   display: flex;
+  padding: 0;
   margin: 2% auto;
 }
 

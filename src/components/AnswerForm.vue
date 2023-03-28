@@ -1,33 +1,47 @@
 <template>
   <div>
-    <input type="checkbox" id="isCorrect">
-    <input placeholder="Answer" id="answer">
+    <input type="checkbox" v-model="isCorrect" id="isCorrect">
+    <input placeholder="Answer" v-model="answer" id="answer">
   </div>
 </template>
 
 <script>
 export default {
   name: 'Create-New_Quiz',
+  expose: ["getAnswer"],
   data() {
     return {
-      quizName: String,
-      quizCount: Number
+      isCorrect: Boolean,
+      answer: String
     }
   },
   created() {
-    this.quizName = null
+    this.isCorrect = false
+    this.answer = null
 
+  },
+  methods: {
+    getAnswer(){
+      return {
+        answer: this.answer,
+        isCorrect: this.isCorrect
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
 
-.form-control label {
+* {
+  border-style: none;
+}
+
+label {
   display: block;
 }
 
-.form-control input {
+input {
   width: 100%;
   height: 40px;
   padding: 5px 7px 5px 15px;
@@ -63,15 +77,16 @@ div{
   width: 100%;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  margin: 2% auto;
 }
 
 #answer {
-  width: 70%;
-  margin: 2% 2% auto;
+  margin: auto 2% auto;
 }
 
 #isCorrect {
   width: 20%;
+  margin: 0;
+  padding: 0;
 }
 </style>
