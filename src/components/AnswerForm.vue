@@ -4,7 +4,7 @@
 
     <div id="answer-input-div">
       <input placeholder="Answer" v-model="answer" id="answer-input" required>
-      <i @click="removeAnswer" class="fa fa-minus" v-show="hideMinusSymbol"></i>
+      <i @click="removeAnswer" class="fa fa-minus" v-show="showMinusSymbol"></i>
     </div>
 
   </div>
@@ -15,7 +15,7 @@ export default {
   name: 'Create-New_Quiz',
   expose: ["getAnswer"],
   props: {
-    hideMinusSymbol: Boolean
+    showMinusSymbol: Boolean
   },
   data() {
     return {

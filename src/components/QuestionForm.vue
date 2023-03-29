@@ -4,7 +4,7 @@
       <label id="position">{{this.position}}.</label>
       <div id="quiz-question-div">
         <input id="quiz-question-input" placeholder="Question" v-model="question" required>
-        <i class="fa fa-minus"></i>
+        <i @click="$emit('removeQuestionEvent')" v-show="showMinusSymbol" class="fa fa-minus"></i>
       </div>
     </div>
     <div id="answer-time-div">
@@ -12,7 +12,7 @@
         <input id="answer-time-input" type="number" v-model="answerTime">
     </div>
     <div class="answer-form">
-      <AnswerForm v-for="i in numberOfAnswers" :key="i" :hide-minus-symbol="hideRemoveAnswersSymbol" @reduceAmountOfAnswers="this.removeAnswer" ref="answers"/>
+      <AnswerForm v-for="i in numberOfAnswers" :key="i" :showMinusSymbol="hideRemoveAnswersSymbol" @reduceAmountOfAnswers="this.removeAnswer" ref="answers"/>
     </div>
     <input type="button" @click="numberOfAnswers++" value="Another Answer" id="add_answer_button">
   </body>
@@ -25,7 +25,8 @@ export default {
   name: 'Create-New_Quiz',
   expose: ['getQuestions'],
   props:{
-    position: Number
+    position: Number,
+    showMinusSymbol: Boolean
   },
   components: {
     AnswerForm
@@ -84,6 +85,7 @@ export default {
       console.log("Remove Answer event")
       console.log(event)
       this.numberOfAnswers--
+      //this.$refs.answers.splice(1, 1)
     }
   }
 }

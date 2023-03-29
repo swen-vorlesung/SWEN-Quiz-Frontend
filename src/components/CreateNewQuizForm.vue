@@ -4,8 +4,9 @@
     <form @submit="onSubmit" class="add-form">
       <div class="form-control">
         <input type="text" v-model="quizName" placeholder="Enter quiz name" required>
-        <QuestionForm v-for="(index) in quizCount" :key="index" ref="questionForms" :position="index" @quizFormErrorEvent="quizFormErrorEvent"/>
-        <input type="button" @click="quizCount++" value="Another Question">
+        <QuestionForm v-for="(index) in questionCount" :key="index" ref="questionForms" :position="index"
+                      :showMinusSymbol="showQuestionMinusSymbol" @removeQuestionEvent="questionCount--" @quizFormErrorEvent="quizFormErrorEvent"/>
+        <input type="button" @click="questionCount++" value="Another Question">
       </div>
       <label id="errorMessage"> {{this.errorMessage}} </label>
       <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
@@ -22,13 +23,22 @@ export default {
   data() {
     return {
       quizName: String,
-      quizCount: Number,
+      questionCount: Number,
       errorMessage: String,
-      quizCreationError: Boolean
+      quizCreationError: Boolean,
+      showQuestionMinusSymbol: Boolean
     }
+  },
+  components: {
+    QuestionForm
   },
   props: {
     token: String
+  },
+  watch: {
+    questionCount() {
+      this.showQuestionMinusSymbol = this.questionCount > 1
+    }
   },
   methods: {
     async onSubmit(e) {
@@ -71,12 +81,9 @@ export default {
   },
   created() {
     this.quizName = null
-    this.quizCount = 1
+    this.questionCount = 1
     this.errorMessage = null
     this.quizCreationError = false
-  },
-  components: {
-    QuestionForm
   }
 }
 </script>
