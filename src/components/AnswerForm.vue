@@ -1,7 +1,12 @@
 <template>
-  <div>
+  <div id="answer-div">
     <input type="checkbox" v-model="isCorrect" id="isCorrect">
-    <input placeholder="Answer" v-model="answer" id="answer" required>
+
+    <div id="answer-input-div">
+      <input placeholder="Answer" v-model="answer" id="answer-input" required>
+      <i @click="removeAnswer" class="fa fa-minus" v-show="hideMinusSymbol"></i>
+    </div>
+
   </div>
 </template>
 
@@ -9,6 +14,9 @@
 export default {
   name: 'Create-New_Quiz',
   expose: ["getAnswer"],
+  props: {
+    hideMinusSymbol: Boolean
+  },
   data() {
     return {
       isCorrect: Boolean,
@@ -18,7 +26,6 @@ export default {
   created() {
     this.isCorrect = false
     this.answer = null
-
   },
   methods: {
     getAnswer(){
@@ -26,6 +33,10 @@ export default {
         answer: this.answer,
         isCorrect: this.isCorrect
       }
+    },
+    removeAnswer(event){
+      console.log(event)
+      this.$emit('reduceAmountOfAnswers', event)
     }
   }
 }
@@ -73,15 +84,21 @@ label {
   margin-bottom: 10px;
 }
 
-div{
+#answer-div{
   width: 100%;
   display: flex;
   flex-direction: row;
   margin: 2% auto;
 }
 
-#answer {
-  margin: auto 2% auto;
+#answer-input-div {
+  position: relative;
+  display: grid;
+  width: 100%;
+}
+
+#answer-input {
+
 }
 
 #isCorrect {

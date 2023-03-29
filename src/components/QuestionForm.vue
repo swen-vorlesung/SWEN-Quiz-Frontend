@@ -2,14 +2,17 @@
   <body>
     <div id="create-quiz-header">
       <label id="position">{{this.position}}.</label>
-      <input placeholder="Question" v-model="question" required>
+      <div id="quiz-question-div">
+        <input id="quiz-question-input" placeholder="Question" v-model="question" required>
+        <i class="fa fa-minus"></i>
+      </div>
     </div>
     <div id="answer-time-div">
         <label id="answer-time-text">Time:</label>
         <input id="answer-time-input" type="number" v-model="answerTime">
     </div>
     <div class="answer-form">
-      <AnswerForm v-for="i in numberOfAnswers" :key="i"  ref="answers"/>
+      <AnswerForm v-for="i in numberOfAnswers" :key="i" :hide-minus-symbol="hideRemoveAnswersSymbol" @reduceAmountOfAnswers="this.removeAnswer" ref="answers"/>
     </div>
     <input type="button" @click="numberOfAnswers++" value="Another Answer" id="add_answer_button">
   </body>
@@ -32,12 +35,19 @@ export default {
       question: String,
       answerTime: Number,
       numberOfAnswers: Number,
+      hideRemoveAnswersSymbol: Boolean,
+    }
+  },
+  watch: {
+    numberOfAnswers() {
+      this.hideRemoveAnswersSymbol = this.numberOfAnswers > 2
     }
   },
   created() {
     this.question = null
     this.answerTime = 0
     this.numberOfAnswers = 2
+    this.hideRemoveAnswersSymbol = true
   },
   methods: {
     getQuestions(){
@@ -69,6 +79,11 @@ export default {
     },
     validateAnswerTime(){
       return this.answerTime > 0
+    },
+    removeAnswer(event){
+      console.log("Remove Answer event")
+      console.log(event)
+      this.numberOfAnswers--
     }
   }
 }
@@ -130,11 +145,16 @@ input {
   margin-bottom: 10px;
 }
 
+#quiz-question-div {
+  display: grid;
+  position: relative;
+  width: 100%;
+}
+
 #answer-time-div{
   width: 90%;
   margin: auto;
   display: flex;
-  flex: auto;
   flex-direction: row;
 }
 
@@ -151,7 +171,7 @@ input {
 }
 
 #answer-time-input{
-  margin: auto 2% auto;
+  margin: auto auto;
 }
 
 #answer-time-text{

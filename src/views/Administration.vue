@@ -95,6 +95,27 @@ input::placeholder{
   background: white;
 }
 
+.fa-minus {
+  display: block;
+  cursor: pointer;
+  background: #0071bc;
+  color: white;
+  border: 2px solid #0071bc;
+  border-radius: 30px;
+  padding: 5px;
+
+  transition: all .4s ease;
+
+  position: absolute;
+  align-self: center;
+  right: 10px;
+}
+
+.fa-minus:hover {
+  background: white;
+  color: #0071bc;
+}
+
 .task {
   background: #29abe2;
   margin: 5px;
