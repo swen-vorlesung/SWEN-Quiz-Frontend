@@ -1,7 +1,7 @@
 <template>
   <div>
     <input type="checkbox" v-model="isCorrect" id="isCorrect">
-    <input placeholder="Answer" v-model="answer" id="answer">
+    <input placeholder="Answer" v-model="answer" id="answer" required>
   </div>
 </template>
 

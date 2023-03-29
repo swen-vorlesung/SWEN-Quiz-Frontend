@@ -2,7 +2,7 @@
   <body>
     <div id="create-quiz-header">
       <label id="position">{{this.position}}.</label>
-      <input placeholder="Question" v-model="question">
+      <input placeholder="Question" v-model="question" required>
     </div>
     <div id="answer-time-div">
         <label id="answer-time-text">Time:</label>
@@ -44,11 +44,31 @@ export default {
       let answerList = []
       this.$refs.answers.forEach(answer => answerList.push(answer.getAnswer()))
 
+      let validAnswers = this.validateAnswers(answerList)
+      let validTime = this.validateAnswerTime()
+
+      if(!validAnswers)
+        this.$emit('quizFormErrorEvent', "You need at least one correct answer")
+      else if(!validTime)
+        this.$emit('quizFormErrorEvent', "Invalid Time. Allowed times are above 0")
+
       return {
         question: this.question,
         answerTime: this.answerTime,
         answers: answerList
       }
+    },
+    validateAnswers(answerList){
+      // Answers has at least one correct answer
+      for(const answer of answerList){
+        if(answer.isCorrect)
+          return true
+      }
+
+      return false
+    },
+    validateAnswerTime(){
+      return this.answerTime > 0
     }
   }
 }

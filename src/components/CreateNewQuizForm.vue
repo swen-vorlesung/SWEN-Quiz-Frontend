@@ -1,15 +1,16 @@
 <template>
   <body>
     <h2>Create new Quiz</h2>
-    <div class="add-form">
+    <form @submit="onSubmit" class="add-form">
       <div class="form-control">
         <input type="text" v-model="quizName" placeholder="Enter quiz name" required>
-        <QuestionForm v-for="(index) in quizCount" :key="index" ref="questionForms" :position="index"/>
+        <QuestionForm v-for="(index) in quizCount" :key="index" ref="questionForms" :position="index" @quizFormErrorEvent="quizFormErrorEvent"/>
         <input type="button" @click="quizCount++" value="Another Question">
       </div>
-      <input type="submit" value="Submit" @click="onSubmit" class="btn btn-block btn-submit"/>
+      <label id="errorMessage"> {{this.errorMessage}} </label>
+      <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
       <input type="button" value="Cancel" @click="onCancel" class="btn btn-block .form btn-cancel"/>
-    </div>
+    </form>
   </body>
 </template>
 
@@ -21,7 +22,9 @@ export default {
   data() {
     return {
       quizName: String,
-      quizCount: Number
+      quizCount: Number,
+      errorMessage: String,
+      quizCreationError: Boolean
     }
   },
   props: {
@@ -34,10 +37,10 @@ export default {
       let questionList = []
       this.$refs.questionForms.forEach(question => questionList.push(question.getQuestions()))
 
-      const data = JSON.stringify({
-        "name":this.quizName,
-        "questions": questionList
-      })
+      if(this.quizCreationError){
+        this.quizCreationError = false
+        return
+      }
 
       const res = await fetch(`${this.$backendURL}/quizzes`, {
         method: "POST",
@@ -45,7 +48,10 @@ export default {
           'Authorization': 'Bearer ' + this.token,
           'Content-Type': 'application/json;charset=utf-8'
         },
-        body: data
+        body: JSON.stringify({
+          "name":this.quizName,
+          "questions": questionList
+        })
       })
 
       // TODO: Validate response
@@ -57,12 +63,17 @@ export default {
       if(window.confirm("Are you sure you want to leave?\nYou will be loosing your entire progress")){
         this.$emit('finished_quiz_creation', false)
       }
+    },
+    quizFormErrorEvent(errorMessage){
+      this.errorMessage = errorMessage
+      this.quizCreationError = true
     }
   },
   created() {
     this.quizName = null
     this.quizCount = 1
-
+    this.errorMessage = null
+    this.quizCreationError = false
   },
   components: {
     QuestionForm
@@ -126,4 +137,12 @@ label {
   background: white;
   color: black;
 }
+
+#errorMessage {
+  display: block;
+  color: red;
+  text-align: center;
+  width: 100%;
+}
+
 </style>
