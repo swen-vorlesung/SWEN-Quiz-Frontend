@@ -12,9 +12,15 @@
         <input id="answer-time-input" type="number" v-model="answerTime">
     </div>
     <div class="answer-form">
-      <AnswerForm v-for="i in numberOfAnswers" :key="i" :showMinusSymbol="hideRemoveAnswersSymbol" @reduceAmountOfAnswers="this.removeAnswer" ref="answers"/>
+      <AnswerForm v-for="(answer, index) in answers"
+                  :key="answer.id"
+                  v-model:answer="answer.answer"
+                  v-model:isCorrect="answer.isCorrect"
+                  :showMinusSymbol="answers.length > 2"
+                  @removeAnswer="answers.splice(index, 1)"
+      />
     </div>
-    <input type="button" @click="numberOfAnswers++" value="Another Answer" id="add_answer_button">
+    <input type="button" @click="addNewAnswer" value="Another Answer" id="add_answer_button">
   </body>
 </template>
 
@@ -36,26 +42,19 @@ export default {
       question: String,
       answerTime: Number,
       numberOfAnswers: Number,
-      hideRemoveAnswersSymbol: Boolean,
-    }
-  },
-  watch: {
-    numberOfAnswers() {
-      this.hideRemoveAnswersSymbol = this.numberOfAnswers > 2
+      answers: []
     }
   },
   created() {
     this.question = null
     this.answerTime = 0
-    this.numberOfAnswers = 2
-    this.hideRemoveAnswersSymbol = true
   },
   methods: {
     getQuestions(){
-      let answerList = []
-      this.$refs.answers.forEach(answer => answerList.push(answer.getAnswer()))
+      let answers = JSON.parse(JSON.stringify(this.answers))
+      this.removeIDFromObject(answers)
 
-      let validAnswers = this.validateAnswers(answerList)
+      let validAnswers = this.validateAnswers(answers)
       let validTime = this.validateAnswerTime()
 
       if(!validAnswers)
@@ -66,12 +65,12 @@ export default {
       return {
         question: this.question,
         answerTime: this.answerTime,
-        answers: answerList
+        answers: answers
       }
     },
-    validateAnswers(answerList){
+    validateAnswers(answers){
       // Answers has at least one correct answer
-      for(const answer of answerList){
+      for(const answer of answers){
         if(answer.isCorrect)
           return true
       }
@@ -81,11 +80,16 @@ export default {
     validateAnswerTime(){
       return this.answerTime > 0
     },
-    removeAnswer(event){
-      console.log("Remove Answer event")
-      console.log(event)
-      this.numberOfAnswers--
-      //this.$refs.answers.splice(1, 1)
+    removeIDFromObject(answers){
+      answers.forEach(answer => delete answer.id)
+      return answers
+    },
+    addNewAnswer(){
+      this.answers.push({
+        id: this.answers.length,
+        answer: "null",
+        isCorrect: false
+      })
     }
   }
 }

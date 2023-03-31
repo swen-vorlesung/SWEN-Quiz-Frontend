@@ -1,10 +1,20 @@
 <template>
   <div id="answer-div">
-    <input type="checkbox" v-model="isCorrect" id="isCorrect">
+    <input type="checkbox"
+           @input="$emit('update:isCorrect', $event.target.checked)"
+           id="isCorrect"
+    />
 
     <div id="answer-input-div">
-      <input placeholder="Answer" v-model="answer" id="answer-input" required>
-      <i @click="removeAnswer" class="fa fa-minus" v-show="showMinusSymbol"></i>
+      <input placeholder="Answer"
+             id="answer-input"
+             @input="$emit('update:answer', $event.target.value)"
+             required
+      />
+      <i @click="$emit('removeAnswer')"
+         v-show="showMinusSymbol"
+         class="fa fa-minus">
+      </i>
     </div>
 
   </div>
@@ -13,31 +23,16 @@
 <script>
 export default {
   name: 'Create-New_Quiz',
-  expose: ["getAnswer"],
   props: {
-    showMinusSymbol: Boolean
+    showMinusSymbol: Boolean,
+    answer: String,
+    isCorrect: Boolean
   },
   data() {
     return {
-      isCorrect: Boolean,
-      answer: String
     }
   },
   created() {
-    this.isCorrect = false
-    this.answer = null
-  },
-  methods: {
-    getAnswer(){
-      return {
-        answer: this.answer,
-        isCorrect: this.isCorrect
-      }
-    },
-    removeAnswer(event){
-      console.log(event)
-      this.$emit('reduceAmountOfAnswers', event)
-    }
   }
 }
 </script>
