@@ -21,8 +21,9 @@
                   :showMinusSymbol="answers.length > 2"
                   @removeAnswerEvent="answers.splice(index, 1)"
       />
+      <input type="button" @click="addNewAnswer" value="Another Answer" id="add_answer_button">
     </div>
-    <input type="button" @click="addNewAnswer" value="Another Answer" id="add_answer_button">
+
   </body>
 </template>
 
@@ -194,7 +195,6 @@ input {
 }
 
 #add_answer_button{
-  width: 86%;
   display: flex;
   padding: 0;
   margin: 2% auto;
