@@ -4,9 +4,15 @@
     <form @submit="onSubmit" class="add-form">
       <div class="form-control">
         <input type="text" v-model="quizName" placeholder="Enter quiz name" required>
-        <QuestionForm v-for="(index) in questionCount" :key="index" ref="questionForms" :position="index"
-                      :showMinusSymbol="showQuestionMinusSymbol" @removeQuestionEvent="questionCount--" @quizFormErrorEvent="quizFormErrorEvent"/>
-        <input type="button" @click="questionCount++" value="Another Question">
+        <QuestionForm v-for="(question, index) in questionIDs"
+                      ref="questionForms"
+                      :key="question.id"
+                      :position="index"
+                      :showMinusSymbol="questionIDs.length > 1"
+                      @quizFormErrorEvent="quizFormErrorEvent"
+                      @removeQuestionEvent="questionIDs.splice(index, 1)"
+        />
+        <input type="button" @click="addQuestion" value="Another Question">
       </div>
       <label id="errorMessage"> {{this.errorMessage}} </label>
       <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
@@ -23,10 +29,10 @@ export default {
   data() {
     return {
       quizName: String,
-      questionCount: Number,
       errorMessage: String,
       quizCreationError: Boolean,
-      showQuestionMinusSymbol: Boolean
+      questionIDCounter: Number,
+      questionIDs: [],
     }
   },
   components: {
@@ -34,11 +40,6 @@ export default {
   },
   props: {
     token: String
-  },
-  watch: {
-    questionCount() {
-      this.showQuestionMinusSymbol = this.questionCount > 1
-    }
   },
   methods: {
     async onSubmit(e) {
@@ -77,13 +78,20 @@ export default {
     quizFormErrorEvent(errorMessage){
       this.errorMessage = errorMessage
       this.quizCreationError = true
+    },
+    addQuestion(){
+      this.questionIDs.push({
+        id: this.questionIDCounter++
+      })
     }
   },
   created() {
     this.quizName = null
-    this.questionCount = 1
     this.errorMessage = null
+    this.questionIDCounter = 0
     this.quizCreationError = false
+
+    this.addQuestion()
   }
 }
 </script>

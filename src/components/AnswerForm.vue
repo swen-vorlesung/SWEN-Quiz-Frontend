@@ -11,7 +11,7 @@
              @input="$emit('update:answer', $event.target.value)"
              required
       />
-      <i @click="$emit('removeAnswer')"
+      <i @click="$emit('removeAnswerEvent')"
          v-show="showMinusSymbol"
          class="fa fa-minus">
       </i>
