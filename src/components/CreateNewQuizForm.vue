@@ -63,9 +63,8 @@ export default {
           "name":this.quizName,
           "questions": questionList
         })
-      })
+      }).catch(error => this.quizFormErrorEvent(error))
 
-      // TODO: Validate response
       console.log(res)
 
       this.$emit('finished_quiz_creation', true)
