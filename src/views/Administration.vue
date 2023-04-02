@@ -1,23 +1,36 @@
 <template>
-  <h2>Administration</h2>
-  <div class='task' :key="quiz.id" v-for="quiz in quizzes">
-    <h3>{{ quiz.name }}
-      <i @click="createQuizSession(quiz.id)" class="fa-solid fa-plus"></i>
-    </h3>
+  <div v-if="!showNewQuizForm">
+    <h2>Administration</h2>
+    <div class='task' :key="quiz.id" v-for="quiz in quizzes">
+      <h3>{{ quiz.name }}
+        <i @click="createQuizSession(quiz.id)" class="fa-solid fa-plus"/>
+      </h3>
+    </div>
+    <div class="add-new-quiz task fa-solid fa-plus" @click="this.toggleShowNewQuizForm">
+      Add new Quiz
+    </div>
   </div>
+
+  <CreateNewQuizForm :token="token" v-if="showNewQuizForm" @finished_quiz_creation="this.finishQuizCreation"/>
 </template>
 
 <script>
+import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
 
 export default {
   name: 'Admin-Page',
+  expose: ["cancelQuizCreation"],
   props: {
     token: String
   },
   data() {
     return {
-      quizzes: []
+      quizzes: [],
+      showNewQuizForm: Boolean
     }
+  },
+  components: {
+    CreateNewQuizForm: CreateNewQuizForm
   },
   methods: {
     async createQuizSession(quizId) {
@@ -41,15 +54,32 @@ export default {
       })
       const data = await res.json()
       return data;
+    },
+    toggleShowNewQuizForm(){
+      this.showNewQuizForm = !this.showNewQuizForm
+    },
+    async finishQuizCreation(finished){
+      if(finished)
+        this.quizzes = await this.fetchQuizzes();
+
+      this.toggleShowNewQuizForm()
     }
   },
   async created() {
     this.quizzes = await this.fetchQuizzes();
+  },
+  mounted() {
+    this.showNewQuizForm = false
   }
 }
 </script>
 
-<style scope>
+<style>
+
+input::placeholder{
+  color: black;
+}
+
 .fa-plus {
   color: white;
   cursor: pointer;
@@ -63,6 +93,27 @@ export default {
 .fa-plus:hover {
   color: #0071bc;
   background: white;
+}
+
+.fa-minus {
+  display: block;
+  cursor: pointer;
+  background: #0071bc;
+  color: white;
+  border: 2px solid #0071bc;
+  border-radius: 30px;
+  padding: 5px;
+
+  transition: all .4s ease;
+
+  position: absolute;
+  align-self: center;
+  right: 10px;
+}
+
+.fa-minus:hover {
+  background: white;
+  color: #0071bc;
 }
 
 .task {
@@ -84,5 +135,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.add-new-quiz {
+  width: 100%;
+  margin: auto;
 }
 </style>
