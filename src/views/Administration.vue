@@ -4,6 +4,7 @@
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
       <h3>{{ quiz.name }}
         <i @click="createQuizSession(quiz.id)" class="fa-solid fa-plus"/>
+        <i id="cog-icon" @click="editQuiz(quiz.id)" class="fa fa-solid fa-cog icon"></i>
       </h3>
     </div>
     <div class="add-new-quiz task fa-solid fa-plus" @click="this.toggleShowNewQuizForm">
@@ -11,7 +12,7 @@
     </div>
   </div>
 
-  <CreateNewQuizForm :token="token" v-if="showNewQuizForm" @finished_quiz_creation="this.finishQuizCreation"/>
+  <CreateNewQuizForm :token="token" :quiz-id="quizId" v-if="showNewQuizForm" @finished_quiz_creation="this.finishQuizCreation"/>
 </template>
 
 <script>
@@ -26,7 +27,8 @@ export default {
   data() {
     return {
       quizzes: [],
-      showNewQuizForm: Boolean
+      showNewQuizForm: Boolean,
+      quizId: Number
     }
   },
   components: {
@@ -58,18 +60,23 @@ export default {
     toggleShowNewQuizForm(){
       this.showNewQuizForm = !this.showNewQuizForm
     },
+    editQuiz(quizId){
+      this.quizId = quizId
+      this.toggleShowNewQuizForm()
+    },
     async finishQuizCreation(finished){
       if(finished)
         this.quizzes = await this.fetchQuizzes();
 
+      this.quizId = null
       this.toggleShowNewQuizForm()
     }
   },
   async created() {
-    this.quizzes = await this.fetchQuizzes();
-  },
-  mounted() {
     this.showNewQuizForm = false
+    this.quizId = null
+
+    this.quizzes = await this.fetchQuizzes();
   }
 }
 </script>

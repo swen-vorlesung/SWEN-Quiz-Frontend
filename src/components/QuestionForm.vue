@@ -3,25 +3,37 @@
     <div id="create-quiz-header">
       <label id="position">{{this.position+1}}.</label>
       <div id="quiz-question-div">
-        <input id="quiz-question-input" placeholder="Question" v-model="question" required>
+        <input id="quiz-question-input"
+               placeholder="Question"
+               :value="question"
+               @input="$emit('update:question', $event.target.value)"
+               required
+        >
         <i @click="$emit('removeQuestionEvent')" v-show="showMinusSymbol" class="fa fa-minus"></i>
       </div>
     </div>
 
     <div id="answer-time-div">
         <label id="answer-time-text">Time:</label>
-        <input id="answer-time-input" type="number" v-model="answerTime">
+        <input id="answer-time-input"
+               type="number"
+               :value="answerTime"
+               @input="$emit('update:answerTime', $event.target.value)"
+        >
     </div>
 
     <div class="answer-form">
       <AnswerForm v-for="(answer, index) in answers"
-                  :key="answer.id"
+                  :key="answer.index"
+                  :id="answer.id"
+                  :answer="answer.answer"
+                  :isCorrect="answer.isCorrect"
+                  :showMinusSymbol="answers.length > 2"
                   v-model:answer="answer.answer"
                   v-model:isCorrect="answer.isCorrect"
-                  :showMinusSymbol="answers.length > 2"
                   @removeAnswerEvent="answers.splice(index, 1)"
       />
-      <input type="button" @click="addNewAnswer" value="Another Answer" id="add_answer_button">
+      <input type="button" @click="addNewEmptyAnswer" value="Another Answer" id="add_answer_button">
     </div>
 
   </body>
@@ -32,35 +44,39 @@ import AnswerForm from "@/components/AnswerForm.vue";
 
 export default {
   name: 'Create-New_Quiz',
-  expose: ['getQuestions'],
+  expose: ['getAnswers'],
   props:{
+    id: Number,
     position: Number,
-    showMinusSymbol: Boolean
+    showMinusSymbol: Boolean,
+    question: String,
+    answerTime: Number,
+    oldAnswers: []
   },
   components: {
     AnswerForm
   },
   data() {
     return {
-      question: String,
-      answerTime: Number,
       answerIDCounter: Number,
       answers: []
     }
   },
   created(){
-    this.question = null
-    this.answerTime = 0
     this.answerIDCounter = 0
 
-    // Create two Answers at startup
-    this.addNewAnswer()
-    this.addNewAnswer()
+    if(this.oldAnswers.length > 0){
+      this.oldAnswers.forEach(oldAnswer => this.addNewAnswer(oldAnswer))
+    }
+    else{
+      this.addNewEmptyAnswer()
+      this.addNewEmptyAnswer()
+    }
   },
   methods: {
-    getQuestions(){
+    getAnswers(){
       let answers = JSON.parse(JSON.stringify(this.answers))
-      this.removeIDFromObject(answers)
+      this.removeIndexFromObject(answers)
 
       let validAnswers = this.validateAnswers(answers)
       let validTime = this.validateAnswerTime()
@@ -70,11 +86,7 @@ export default {
       else if(!validTime)
         this.$emit('quizFormErrorEvent', "Invalid Time. Allowed times are above 0")
 
-      return {
-        question: this.question,
-        answerTime: this.answerTime,
-        answers: answers
-      }
+      this.$emit("update:answers", this.answers)
     },
     validateAnswers(answers){
       // Answers has at least one correct answer
@@ -88,14 +100,23 @@ export default {
     validateAnswerTime(){
       return this.answerTime > 0
     },
-    removeIDFromObject(answers){
-      answers.forEach(answer => delete answer.id)
+    removeIndexFromObject(answers){
+      answers.forEach(answer => delete answer.index)
       return answers
     },
-    addNewAnswer(){
+    addNewAnswer(answer){
       this.answers.push({
-        id: this.answerIDCounter++,
-        answer: "null",
+        id: answer.id,
+        index: this.answerIDCounter++,
+        answer: answer.answer,
+        isCorrect: answer.isCorrect
+      })
+    },
+    addNewEmptyAnswer(){
+      this.answers.push({
+        id: null,
+        index: this.answerIDCounter++,
+        answer: null,
         isCorrect: false
       })
     }
