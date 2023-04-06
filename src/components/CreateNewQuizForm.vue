@@ -71,7 +71,7 @@ export default {
         questions: this.questions
       }
 
-      const res = await fetch(`${this.$backendURL}/quizzes`, {
+      await fetch(`${this.$backendURL}/quizzes`, {
         method: httpMethod,
         headers: {
           'Authorization': 'Bearer ' + this.token,
@@ -79,8 +79,6 @@ export default {
         },
         body: JSON.stringify(data)
       }).catch(error => this.quizFormErrorEvent(error))
-
-      console.log(res)
 
       this.$emit('finished_quiz_creation', true)
     },

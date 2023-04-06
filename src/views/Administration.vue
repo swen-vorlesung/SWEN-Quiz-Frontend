@@ -2,12 +2,13 @@
   <div v-if="!showNewQuizForm">
     <h2>Administration</h2>
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
-      <h3>{{ quiz.name }}
-        <i @click="createQuizSession(quiz.id)" class="fa-solid fa-plus"/>
-        <i id="cog-icon" @click="editQuiz(quiz.id)" class="fa fa-solid fa-cog icon"></i>
-      </h3>
+      <h3>{{ quiz.name }}</h3>
+      <div id="icon-div">
+        <i @click="createQuizSession(quiz.id)" class="fa-solid fa-button fa-plus"/>
+        <i id="cog-icon" @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog icon"></i>
+      </div>
     </div>
-    <div class="add-new-quiz task fa-solid fa-plus" @click="this.toggleShowNewQuizForm">
+    <div id="add-new-quiz" class="task fa-solid fa-button" @click="this.toggleShowNewQuizForm">
       Add new Quiz
     </div>
   </div>
@@ -87,7 +88,16 @@ input::placeholder{
   color: black;
 }
 
+i {
+  text-align: center;
+}
+
 .fa-plus {
+  width: 30px;
+  height: 30px;
+}
+
+.fa-button {
   color: white;
   cursor: pointer;
   border: 2px solid white;
@@ -95,9 +105,11 @@ input::placeholder{
   padding: 5px;
   background: #0071bc;
   transition: all .4s ease;
+
+  margin: auto 3px auto 3px;
 }
 
-.fa-plus:hover {
+.fa-button:hover {
   color: #0071bc;
   background: white;
 }
@@ -138,14 +150,15 @@ input::placeholder{
   border-left: 5px solid green;
 }
 
-.task h3 {
+.task {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.add-new-quiz {
+#add-new-quiz {
   width: 100%;
   margin: auto;
+  justify-content: start;
 }
 </style>
