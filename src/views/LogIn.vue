@@ -9,6 +9,12 @@
         <input type="submit" value="Submit" class="btn btn-block btn-submit" />
         <button @click="useDemo"  class="btn btn-block btn-submit">Use Demo</button>
     </form>
+    <br>
+    <form @submit="enterWaitingRoom" class="form-control">
+        <label>Enter room code to directly join a waiting room</label>
+        <input  v-model="roomCode" type="text" placeholder="Enter Room Code">
+        <input type="button" value="Join waiting room" class="btn btn-block btn-submit" />
+    </form>
 </template>
 
 <script>
@@ -18,7 +24,8 @@ export default {
     data() {
         return {
             username: String,
-            password: String
+            password: String,
+            roomCode: String,
         }
     },
     methods: {
@@ -48,11 +55,18 @@ export default {
         async useDemo() {
             this.username = 'DEMO'
             this.password = 'DEMO'
+        },
+        enterWaitingRoom(){
+            if(this.roomCode == null || this.roomCode === "")
+                return;
+
+            this.$router.push(`/quiz/${this.roomCode}/waitingroom`)
         }
     },
     created() {
         this.username = null
         this.password = null
+        this.roomCode = null
     }
 }
 </script>
@@ -110,7 +124,7 @@ h2 {
 label {
     color: white;
     padding-left: 15px;
-    margin-bottom: 10px;
+    margin: 10px auto 10px;
 }
 
 .btn-submit {
