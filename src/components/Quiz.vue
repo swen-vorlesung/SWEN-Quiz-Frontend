@@ -5,12 +5,12 @@
       <form @submit="onSubmit" class="add-form">
         <div class="form-control">
           <div class='task' :key="answer.id" v-for="answer in question.answers"
-               :class="{active: answerIds.includes(answer.id)}">
-            <input type="checkbox" :value="answer.id" v-model="answerIds"/>
+               :class="{active: answerIds.includes(answer.id), correct_answer: isCorrectAnswer(answer), wrong_answer: isWrongAnswer(answer)}">
+            <input type="checkbox" :value="answer.id" v-model="answerIds" :disabled="isAdmin || showCorrectAnswers"/>
             <label>{{ answer.answer }}</label>
           </div>
         </div>
-        <div class="submit-wrapper">
+        <div class="submit-wrapper" v-show="!showCorrectAnswers">
           <Counter :countdown="countdown"/>
           <input type="submit" value="Submit" class="btn btn-block btn-submit" v-show="!isAdmin"/>
         </div>
@@ -38,7 +38,8 @@ export default {
     sessionId: String,
     countdown: Number,
     token: String,
-    isAdmin: Boolean
+    isAdmin: Boolean,
+    showCorrectAnswers: Boolean
   },
   components: {
     Counter
@@ -46,19 +47,22 @@ export default {
   data() {
     return {
       answerIds: [],
-      showWaitingScreen: Boolean
+      showWaitingScreen: Boolean,
     }
   },
   watch: {
     question: function () {
       this.showWaitingScreen = false
+    },
+    showCorrectAnswers(newValue) {
+      this.showWaitingScreen = !newValue
     }
   },
   methods: {
     async onSubmit(e) {
       e.preventDefault()
 
-      var answers = {}
+      let answers = {}
       answers.answers = []
       this.answerIds.forEach((element) => answers.answers.push({id: element}))
 
@@ -72,7 +76,20 @@ export default {
       });
       this.answerIds = []
 
-      this.showWaitingScreen = true;
+      if(!this.showCorrectAnswers)
+        this.showWaitingScreen = true;
+    },
+    isCorrectAnswer(answer){
+      if(this.showCorrectAnswers)
+        return answer.isCorrect;
+      else
+        return false;
+    },
+    isWrongAnswer(answer){
+      if(this.showCorrectAnswers)
+        return !answer.isCorrect;
+      else
+        return false;
     }
   }
 }
@@ -225,5 +242,14 @@ h3 {
   margin-top: 40px;
   margin-bottom: 5px;
 }
+
+.correct_answer {
+  background-color: green;
+}
+
+.wrong_answer {
+  background-color: red;
+}
+
 </style>
   

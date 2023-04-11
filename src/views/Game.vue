@@ -1,6 +1,7 @@
 <template>
-  <Quiz :user="user" :sessionId="sessionId" :question="question" :countdown="countdown" :isAdmin="isAdmin" v-show="!showResults"></Quiz>
+  <Quiz :user="user" :sessionId="sessionId" :question="question" :showCorrectAnswers="showCorrectAnswers" :countdown="countdown" :isAdmin="isAdmin" v-show="!showResults"></Quiz>
   <Results :results="results" :finished="finished" :user="user" :isAdmin="isAdmin" v-show="showResults"></Results>
+  <Button @click="getResults" class="btn btn-next-question" v-show="showCorrectAnswers && isAdmin">Show Results</Button>
   <Button @click="nextQuestion" class="btn btn-next-question" v-show="showResults && isAdmin" v-if="!finished">Next Question</Button>
 </template>
 
@@ -14,6 +15,7 @@ export default {
     connected: Boolean,
     newQuestionEvent: Object,
     resultsUpdatedEvent: Object,
+    timeOverEvent: Object,
     user: String,
     sessionId: String,
     token: String,
@@ -29,6 +31,7 @@ export default {
       results: Object,
       showResults: Boolean,
       finished: Boolean,
+      showCorrectAnswers: Boolean,
       countdown: Number
     }
   },
@@ -45,6 +48,11 @@ export default {
       this.showResults = true
       this.results = event.scores
       this.finished = event.finished
+      this.showCorrectAnswers = false
+    },
+    timeOverEvent: function(event) {
+      console.log(event)
+      this.showCorrectAnswers = true
     }
   },
   methods: {
@@ -55,6 +63,14 @@ export default {
           'Authorization': 'Bearer ' + this.token
         },
       });
+    },
+    async getResults() {
+      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/showResults`, {
+        method: "POST",
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        },
+      }).then(this.showCorrectAnswers = false);
     },
     countDownTimer() {
       if (this.countdown > 0) {
@@ -67,6 +83,7 @@ export default {
   },
   created() {
     this.showResults = false
+    this.showCorrectAnswers = false
   }
 }
 </script>
