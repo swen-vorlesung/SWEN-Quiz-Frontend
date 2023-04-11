@@ -5,7 +5,7 @@
       <form @submit="onSubmit" class="add-form">
         <div class="form-control">
           <div class='task' :key="answer.id" v-for="answer in question.answers"
-               :class="{active: answerIds.includes(answer.id), correct_answer: isCorrectAnswer(answer)}">
+               :class="{active: answerIds.includes(answer.id), correct_answer: isCorrectAnswer(answer), wrong_answer: isWrongAnswer(answer)}">
             <input type="checkbox" :value="answer.id" v-model="answerIds" :disabled="isAdmin || showCorrectAnswers"/>
             <label>{{ answer.answer }}</label>
           </div>
@@ -82,6 +82,12 @@ export default {
     isCorrectAnswer(answer){
       if(this.showCorrectAnswers)
         return answer.isCorrect;
+      else
+        return false;
+    },
+    isWrongAnswer(answer){
+      if(this.showCorrectAnswers)
+        return !answer.isCorrect;
       else
         return false;
     }
@@ -240,5 +246,10 @@ h3 {
 .correct_answer {
   background-color: green;
 }
+
+.wrong_answer {
+  background-color: red;
+}
+
 </style>
   
