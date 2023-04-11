@@ -2,7 +2,7 @@
   <div class="container">
     <Header />
     <router-view :participantsUpdatedEvent="participantsUpdatedEvent" :quizStateUpdatedEvent="quizStateUpdatedEvent"
-      :resultsUpdatedEvent="resultsUpdatedEvent" :newQuestionEvent="newQuestionEvent" :connected="connected"
+      :resultsUpdatedEvent="resultsUpdatedEvent" :newQuestionEvent="newQuestionEvent" :timeOverEvent="timeOverEvent" :connected="connected"
       :user="user" :token="token" :isAdmin="isAdmin" :sessionId="sessionId" 
       @connect="connect" @setUser="setUser" @setToken="setToken" @setAdmin="setAdmin"></router-view>
     <Footer />
@@ -27,6 +27,7 @@ export default {
       quizStateUpdatedEvent: Object,
       resultsUpdatedEvent: Object,
       newQuestionEvent: Object,
+      timeOverEvent: Object,
       user: String,
       token: String,
       sessionId: String,
@@ -57,6 +58,9 @@ export default {
             }
             if (event.eventName === 'NewQuestionEvent') {
               this.newQuestionEvent = event;
+            }
+            if (event.eventName === 'TimeOverEvent'){
+              this.timeOverEvent = event;
             }
           });
         },
