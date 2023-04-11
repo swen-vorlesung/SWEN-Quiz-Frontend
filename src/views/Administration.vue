@@ -2,16 +2,18 @@
   <div v-if="!showNewQuizForm">
     <h2>Administration</h2>
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
-      <h3>{{ quiz.name }}
-        <i @click="createQuizSession(quiz.id)" class="fa-solid fa-plus"/>
-      </h3>
+      <h3>{{ quiz.name }}</h3>
+      <div id="icon-div">
+        <i @click="createQuizSession(quiz.id)" class="fa-solid fa-button fa-plus"/>
+        <i id="cog-icon" @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog icon"></i>
+      </div>
     </div>
-    <div class="add-new-quiz task fa-solid fa-plus" @click="this.toggleShowNewQuizForm">
+    <div id="add-new-quiz" class="task fa-solid fa-button" @click="this.toggleShowNewQuizForm">
       Add new Quiz
     </div>
   </div>
 
-  <CreateNewQuizForm :token="token" v-if="showNewQuizForm" @finished_quiz_creation="this.finishQuizCreation"/>
+  <CreateNewQuizForm :token="token" :quiz-id="quizId" v-if="showNewQuizForm" @finished_quiz_creation="this.finishQuizCreation"/>
 </template>
 
 <script>
@@ -26,7 +28,8 @@ export default {
   data() {
     return {
       quizzes: [],
-      showNewQuizForm: Boolean
+      showNewQuizForm: Boolean,
+      quizId: Number
     }
   },
   components: {
@@ -58,18 +61,23 @@ export default {
     toggleShowNewQuizForm(){
       this.showNewQuizForm = !this.showNewQuizForm
     },
+    editQuiz(quizId){
+      this.quizId = quizId
+      this.toggleShowNewQuizForm()
+    },
     async finishQuizCreation(finished){
       if(finished)
         this.quizzes = await this.fetchQuizzes();
 
+      this.quizId = null
       this.toggleShowNewQuizForm()
     }
   },
   async created() {
-    this.quizzes = await this.fetchQuizzes();
-  },
-  mounted() {
     this.showNewQuizForm = false
+    this.quizId = null
+
+    this.quizzes = await this.fetchQuizzes();
   }
 }
 </script>
@@ -80,7 +88,16 @@ input::placeholder{
   color: black;
 }
 
+i {
+  text-align: center;
+}
+
 .fa-plus {
+  width: 30px;
+  height: 30px;
+}
+
+.fa-button {
   color: white;
   cursor: pointer;
   border: 2px solid white;
@@ -88,9 +105,11 @@ input::placeholder{
   padding: 5px;
   background: #0071bc;
   transition: all .4s ease;
+
+  margin: auto 3px auto 3px;
 }
 
-.fa-plus:hover {
+.fa-button:hover {
   color: #0071bc;
   background: white;
 }
@@ -131,14 +150,15 @@ input::placeholder{
   border-left: 5px solid green;
 }
 
-.task h3 {
+.task {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.add-new-quiz {
+#add-new-quiz {
   width: 100%;
   margin: auto;
+  justify-content: start;
 }
 </style>

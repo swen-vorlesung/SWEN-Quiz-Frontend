@@ -4,15 +4,22 @@
     <form @submit="onSubmit" class="add-form">
       <div class="form-control">
         <input type="text" v-model="quizName" placeholder="Enter quiz name" required>
-        <QuestionForm v-for="(question, index) in questionIDs"
+        <QuestionForm v-for="(question, index) in questions"
                       ref="questionForms"
-                      :key="question.id"
+                      :key="question.index"
+                      :id="question.id"
+                      :question="question.question"
+                      :answerTime="question.answerTime"
+                      :oldAnswers="question.answers"
                       :position="index"
-                      :showMinusSymbol="questionIDs.length > 1"
+                      :showMinusSymbol="questions.length > 1"
+                      v-model:question="question.question"
+                      v-model:answerTime="question.answerTime"
+                      v-model:answers="question.answers"
                       @quizFormErrorEvent="quizFormErrorEvent"
-                      @removeQuestionEvent="questionIDs.splice(index, 1)"
+                      @removeQuestionEvent="questions.splice(index, 1)"
         />
-        <input type="button" @click="addQuestion" value="Another Question">
+        <input type="button" @click="addEmptyQuestion" value="Another Question">
       </div>
       <label id="errorMessage"> {{this.errorMessage}} </label>
       <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
@@ -31,43 +38,63 @@ export default {
       quizName: String,
       errorMessage: String,
       quizCreationError: Boolean,
+      updatingQuiz: Boolean,
       questionIDCounter: Number,
-      questionIDs: [],
+      questions: [],
     }
   },
   components: {
     QuestionForm
   },
   props: {
-    token: String
+    token: String,
+    quizId: Number
   },
   methods: {
     async onSubmit(e) {
       e.preventDefault()
 
-      let questionList = []
-      this.$refs.questionForms.forEach(question => questionList.push(question.getQuestions()))
+      let httpMethod = "POST"
+      this.$refs.questionForms.forEach(question => question.getAnswers())
 
       if(this.quizCreationError){
         this.quizCreationError = false
         return
       }
 
-      const res = await fetch(`${this.$backendURL}/quizzes`, {
-        method: "POST",
+      if(this.updatingQuiz)
+        httpMethod = "PUT"
+
+      const data = {
+        id: this.quizId,
+        name: this.quizName,
+        questions: this.questions
+      }
+
+      await fetch(`${this.$backendURL}/quizzes`, {
+        method: httpMethod,
         headers: {
           'Authorization': 'Bearer ' + this.token,
           'Content-Type': 'application/json;charset=utf-8'
         },
-        body: JSON.stringify({
-          "name":this.quizName,
-          "questions": questionList
-        })
+        body: JSON.stringify(data)
       }).catch(error => this.quizFormErrorEvent(error))
 
-      console.log(res)
-
       this.$emit('finished_quiz_creation', true)
+    },
+    async getQuiz(quizId){
+      const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
+        method: "GET",
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).catch(error => this.quizFormErrorEvent(error))
+
+      const quiz = await res.json()
+      this.quizName = quiz.name
+      this.updatingQuiz = true
+
+      quiz.questions.forEach(question => this.addQuestion(question))
     },
     onCancel(){
       if(window.confirm("Are you sure you want to leave?\nYou will be loosing your entire progress")){
@@ -78,9 +105,22 @@ export default {
       this.errorMessage = errorMessage
       this.quizCreationError = true
     },
-    addQuestion(){
-      this.questionIDs.push({
-        id: this.questionIDCounter++
+    addEmptyQuestion(){
+      this.questions.push({
+        id: null,
+        index: this.questionIDCounter++,
+        question: null,
+        answerTime: 0,
+        answers: []
+      })
+    },
+    addQuestion(question){
+      this.questions.push({
+        id: question.id,
+        index: this.questionIDCounter++,
+        question: question.question,
+        answerTime: question.answerTime,
+        answers: question.answers
       })
     }
   },
@@ -89,8 +129,14 @@ export default {
     this.errorMessage = null
     this.questionIDCounter = 0
     this.quizCreationError = false
+    this.updatingQuiz = false
+    this.questions = []
 
-    this.addQuestion()
+    if(this.quizId != null)
+      this.getQuiz(this.quizId)
+    else
+      this.addEmptyQuestion()
+
   }
 }
 </script>

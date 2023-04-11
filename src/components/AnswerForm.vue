@@ -1,6 +1,7 @@
 <template>
   <div id="answer-div">
     <input type="checkbox"
+           :checked="isCorrect"
            @input="$emit('update:isCorrect', $event.target.checked)"
            id="isCorrect"
     />
@@ -8,6 +9,7 @@
     <div id="answer-input-div">
       <input placeholder="Answer"
              id="answer-input"
+             :value="answer"
              @input="$emit('update:answer', $event.target.value)"
              required
       />
@@ -24,15 +26,10 @@
 export default {
   name: 'Create-New_Quiz',
   props: {
+    id: Number,
     showMinusSymbol: Boolean,
     answer: String,
     isCorrect: Boolean
-  },
-  data() {
-    return {
-    }
-  },
-  created() {
   }
 }
 </script>
