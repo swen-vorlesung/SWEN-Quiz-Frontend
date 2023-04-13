@@ -18,7 +18,6 @@ export default {
     timeOverEvent: Object,
     user: String,
     sessionId: String,
-    token: String,
     isAdmin: Boolean
   },
   components: {
@@ -59,17 +58,13 @@ export default {
     async nextQuestion() {
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/next`, {
         method: "POST",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
+        credentials: "include",
       });
     },
     async getResults() {
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/showResults`, {
         method: "POST",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
+        credentials: "include",
       }).then(this.showCorrectAnswers = false);
     },
     countDownTimer() {

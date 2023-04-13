@@ -24,7 +24,6 @@ export default {
     quizStateUpdatedEvent: Object,
     user: String,
     sessionId: String,
-    token: String,
     isAdmin: Boolean
   },
   data() {
@@ -68,9 +67,7 @@ export default {
     async startQuiz() {
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/start`, {
         method: "POST",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
+        credentials: "include",
       });
       this.redirectToGame()
     },

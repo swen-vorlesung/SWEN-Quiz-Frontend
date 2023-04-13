@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  <CreateNewQuizForm :token="token" :quiz-id="quizId" v-if="showNewQuizForm" @finished_quiz_creation="this.finishQuizCreation"/>
+  <CreateNewQuizForm :quiz-id="quizId" v-if="showNewQuizForm" @finished_quiz_creation="this.finishQuizCreation"/>
 </template>
 
 <script>
@@ -22,9 +22,6 @@ import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
 export default {
   name: 'Admin-Page',
   expose: ["cancelQuizCreation"],
-  props: {
-    token: String
-  },
   data() {
     return {
       quizzes: [],
@@ -39,9 +36,7 @@ export default {
     async createQuizSession(quizId) {
       const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
         method: "POST",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
+        credentials: "include",
       });
       console.log('createQuizSession')
       const data = await res.json()
@@ -51,9 +46,7 @@ export default {
     async fetchQuizzes() {
       const res = await fetch(`${this.$backendURL}/quizzes`, {
         method: "GET",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
+        credentials: "include",
       })
       const data = await res.json()
       return data;
