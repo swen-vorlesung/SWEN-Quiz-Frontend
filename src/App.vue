@@ -3,8 +3,8 @@
     <Header />
     <router-view :participantsUpdatedEvent="participantsUpdatedEvent" :quizStateUpdatedEvent="quizStateUpdatedEvent"
       :resultsUpdatedEvent="resultsUpdatedEvent" :newQuestionEvent="newQuestionEvent" :timeOverEvent="timeOverEvent" :connected="connected"
-      :user="user" :token="token" :isAdmin="isAdmin" :sessionId="sessionId" 
-      @connect="connect" @setUser="setUser" @setToken="setToken" @setAdmin="setAdmin"></router-view>
+      :user="user" :token="token" :isAdmin="isAdmin" :sessionId="sessionId" :quizName="quizName"
+      @connect="connect" @setUser="setUser" @setToken="setToken" @setAdmin="setAdmin" @setQuizName="setQuizName"></router-view>
     <Footer />
   </div>
 </template>
@@ -31,7 +31,8 @@ export default {
       user: String,
       token: String,
       sessionId: String,
-      isAdmin: Boolean 
+      isAdmin: Boolean ,
+      quizName: String,
     }
   },
   emits: ['connect', 'setUser', 'setToken', 'setAdmin'],
@@ -78,6 +79,9 @@ export default {
     },
     setAdmin(isAdmin) {
       this.isAdmin = isAdmin
+    },
+    setQuizName(quizName) {
+      this.quizName = quizName
     },
     disconnect() {
       if (this.stompClient) {

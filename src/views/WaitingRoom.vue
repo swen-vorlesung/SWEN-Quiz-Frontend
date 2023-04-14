@@ -1,5 +1,5 @@
 <template>
-  <h2>Quiz - {{ sessionId }}</h2>
+  <h2>{{this.quizName}} <br> Room Code: {{ sessionId }}</h2>
   <qrcode-vue :value="this.origin + '/quiz/'+ sessionId + '/waitingroom'" :size="300" level="H" class="qr-code" v-show="isAdmin"/>
   <form @submit="onSubmit" class="add-form" v-show="!user && !isAdmin">
     <div class="form-control">
@@ -25,7 +25,8 @@ export default {
     user: String,
     sessionId: String,
     token: String,
-    isAdmin: Boolean
+    isAdmin: Boolean,
+    quizName: String,
   },
   data() {
     return {
