@@ -45,9 +45,6 @@ export default {
 
             if (data.token) {
                 this.setCookies(data.token)
-
-                this.$emit('setUser', this.username)
-                this.$emit('setAdmin', true)
                 this.$router.push(`/admin`)
             } else {
                 alert("invalid Username or Password")
@@ -65,8 +62,6 @@ export default {
         },
         setCookies(token){
             this.$cookies.set("session_token", token, "1d", "/", "localhost", true, "None")
-            this.$cookies.set("username", this.username)
-            this.$cookies.set("isAdmin", true)
         }
     },
     created() {

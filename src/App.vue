@@ -83,17 +83,11 @@ export default {
     },
   },
   created() {
-    // TODO: Remove Log!
-    console.log("has token:")
-    console.log(this.$cookies.isKey("session_token"))
-
-    if(this.$cookies.isKey("session_token")){
-      this.isAdmin = this.$cookies.get("isAdmin")
-      this.user = this.$cookies.get("username")
-    }else{
-      console.log("No session token:")
+    if(!this.$cookies.isKey("session_token")){
       this.isAdmin = false;
       this.user = null;
+    }else {
+      this.isAdmin = true
     }
   }
 }
