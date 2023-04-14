@@ -2,7 +2,7 @@
   <div v-if="!showNewQuizForm">
     <h2>Administration</h2>
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
-      <h3>{{ quiz.name }}</h3>
+      <h3>{{ getQuizName(quiz.name) }}</h3>
       <div id="icon-div">
         <i @click="createQuizSession(quiz.id)" class="fa-solid fa-button fa-plus"/>
         <i id="cog-icon" @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog icon"></i>
@@ -71,12 +71,17 @@ export default {
 
       this.quizId = null
       this.toggleShowNewQuizForm()
+    },
+    getQuizName(quizName){
+      if(quizName.length < this.$maxQuizNameLength)
+        return quizName
+      else
+        return quizName.substring(0, this.$maxQuizNameLength) + "..."
     }
   },
   async created() {
     this.showNewQuizForm = false
     this.quizId = null
-
     this.quizzes = await this.fetchQuizzes();
   }
 }

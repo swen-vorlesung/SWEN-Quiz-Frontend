@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 
 import router from './router'
@@ -6,5 +6,6 @@ import router from './router'
 const app = createApp(App)
 
 app.config.globalProperties.$backendURL = process.env.VUE_APP_BACKEND_BASE_URL
+app.config.globalProperties.$maxQuizNameLength = 25
 app.use(router)
 app.mount('#app')
