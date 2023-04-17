@@ -5,7 +5,10 @@
     </div>
     <h3>Ranking</h3>
     <div class='task' :key="result.nickname" v-for="result in sortedResults">
-      <label>{{ result.nickname }} : {{ result.score }}</label>
+      <label>
+        {{ result.nickname }} : {{ result.score }}
+        <label v-if="!this.isFirstRound() && !isAdmin">(+ {{ result.gainedPoints }})</label>
+      </label>
     </div>
   </header>
 </template>
@@ -59,6 +62,17 @@ export default {
         if(result.nickname === this.user)
           return place
       }
+    },
+    isFirstRound(){
+      for(const result of this.results){
+        let score = result.score
+        let gainedPoints = result.gainedPoints
+
+        if(score !== gainedPoints)
+          return false
+      }
+
+      return true
     }
   }
 }
