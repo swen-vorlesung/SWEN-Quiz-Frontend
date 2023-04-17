@@ -81,7 +81,10 @@ export default {
       this.isAdmin = isAdmin
     },
     setQuizName(quizName) {
-      this.quizName = quizName
+      if(quizName.length < this.$maxQuizNameLength)
+        this.quizName = quizName
+      else
+        this.quizName = quizName.substring(0, this.$maxQuizNameLength) + "..."
     },
     disconnect() {
       if (this.stompClient) {
@@ -93,6 +96,7 @@ export default {
   created() {
     this.user = null
     this.isAdmin = false
+    this.quizName = "Quiz-App"
   }
 }
 </script>
