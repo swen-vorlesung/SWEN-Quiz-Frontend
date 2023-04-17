@@ -1,11 +1,13 @@
 <template>
   <div v-if="!showNewQuizForm">
     <h2>Administration</h2>
+    <h2 v-show="quizzes.length <= 0">No Quiz could be found</h2>
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
       <h3>{{ quiz.name }}</h3>
       <div id="icon-div">
         <i @click="createQuizSession(quiz.id)" class="fa-solid fa-button fa-plus"/>
-        <i id="cog-icon" @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog icon"></i>
+        <i @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog"></i>
+        <i @click="deleteQuiz(quiz.id)" class="fa fa-solid fa-button fa-trash"></i>
       </div>
     </div>
     <div id="add-new-quiz" class="task fa-solid fa-button" @click="this.toggleShowNewQuizForm">
@@ -71,7 +73,22 @@ export default {
 
       this.quizId = null
       this.toggleShowNewQuizForm()
-    }
+    },
+    async deleteQuiz(quizId){
+      await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
+        method: "DELETE",
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        },
+      })
+      .then(this.checkForErrors)
+      .then(async () => this.quizzes = await this.fetchQuizzes())
+      .catch(error => console.log(error))
+    },
+    checkForErrors(response){
+      if(!response.ok)
+        throw Error("Error: " + response.status + ":" + response.statusText)
+    },
   },
   async created() {
     this.showNewQuizForm = false
