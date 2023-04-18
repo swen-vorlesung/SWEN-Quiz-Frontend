@@ -22,8 +22,9 @@
         <input type="button" @click="addEmptyQuestion" value="Another Question">
       </div>
       <label id="errorMessage"> {{this.errorMessage}} </label>
-      <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
-      <input type="button" value="Cancel" @click="onCancel" class="btn btn-block .form btn-cancel"/>
+      <input type="submit" value="Submit" class="btn btn-block btn-submit bold"/>
+      <input type="button" value="Cancel" @click="onCancel" class="btn btn-block .form btn_cancel bold" :class="{btn_delete: !updatingQuiz}"/>
+      <input type="button" value="Delete Quiz" @click="deleteQuiz" v-if="updatingQuiz" class="btn btn-block .form btn_delete bold" />
     </form>
   </body>
 </template>
@@ -78,23 +79,27 @@ export default {
           'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify(data)
-      }).catch(error => this.quizFormErrorEvent(error))
-
-      this.$emit('finished_quiz_creation', true)
+      })
+      .then(this.checkForErrors)
+      .then(() => this.$emit('finished_quiz_creation', true))
+      .catch(error => this.quizFormErrorEvent(error))
     },
     async getQuiz(quizId){
-      const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
+      await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
         method: "GET",
         headers: {
           'Authorization': 'Bearer ' + this.token
         }
-      }).catch(error => this.quizFormErrorEvent(error))
+      })
+      .then(this.checkForErrors)
+      .then(async result => {
+        const quiz = await result.json()
+        this.quizName = quiz.name
+        this.updatingQuiz = true
 
-      const quiz = await res.json()
-      this.quizName = quiz.name
-      this.updatingQuiz = true
-
-      quiz.questions.forEach(question => this.addQuestion(question))
+        quiz.questions.forEach(question => this.addQuestion(question))
+      })
+      .catch(error => this.quizFormErrorEvent(error))
     },
     onCancel(){
       if(window.confirm("Are you sure you want to leave?\nYou will be loosing your entire progress")){
@@ -122,6 +127,30 @@ export default {
         answerTime: question.answerTime,
         answers: question.answers
       })
+    },
+    async deleteQuiz(){
+      if(!this.updatingQuiz)
+        return;
+
+      if(!window.confirm("Are you sure you want to delete this quiz?"))
+        return
+
+      await fetch(`${this.$backendURL}/quizzes/${this.quizId}`, {
+        method: "DELETE",
+        headers: {
+          'Authorization': 'Bearer ' + this.token
+        },
+      })
+      .then(this.checkForErrors)
+      .then(() => this.$emit('finished_quiz_creation', true))
+      .catch(error => console.log(error))
+    },
+    checkForErrors(result){
+      console.log(result)
+      if(!result.ok)
+        throw new Error(result.status + ":" + result.errorMessage)
+      else
+        return result
     }
   },
   created() {
@@ -189,13 +218,26 @@ label {
   margin-bottom: 10px;
 }
 
-.btn-submit {
-  background: #0071bc;
+.btn {
+ margin: 2% auto;
 }
 
-.btn-cancel {
-  background: white;
-  color: black;
+.btn-submit {
+  background: limegreen;
+}
+
+.btn_cancel {
+  background: #0071bc;
+  color: white;
+}
+
+.btn_delete {
+  color: white;
+  background: red;
+}
+
+.bold {
+  font-weight: bold;
 }
 
 #errorMessage {

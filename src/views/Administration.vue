@@ -7,7 +7,6 @@
       <div id="icon-div">
         <i @click="createQuizSession(quiz.id)" class="fa-solid fa-button fa-plus"/>
         <i @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog"></i>
-        <i @click="deleteQuiz(quiz.id)" class="fa fa-solid fa-button fa-trash"></i>
       </div>
     </div>
     <div id="add-new-quiz" class="task fa-solid fa-button" @click="this.toggleShowNewQuizForm">
@@ -23,7 +22,6 @@ import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
 
 export default {
   name: 'Admin-Page',
-  expose: ["cancelQuizCreation"],
   props: {
     token: String
   },
@@ -73,17 +71,6 @@ export default {
 
       this.quizId = null
       this.toggleShowNewQuizForm()
-    },
-    async deleteQuiz(quizId){
-      await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
-        method: "DELETE",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
-      })
-      .then(this.checkForErrors)
-      .then(async () => this.quizzes = await this.fetchQuizzes())
-      .catch(error => console.log(error))
     },
     checkForErrors(response){
       if(!response.ok)
