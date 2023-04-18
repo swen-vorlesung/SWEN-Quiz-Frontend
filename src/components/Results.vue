@@ -10,6 +10,10 @@
         <label v-if="!this.isFirstRound()">(+ {{ result.gainedPoints }})</label>
       </label>
     </div>
+    <br>
+    <div v-show="finished">
+      <input type="Button" @click="exitScoreboard" class="btn btn-block btn-submit" value="Exit Scoreboard"/>
+    </div>
   </header>
 </template>
 
@@ -73,6 +77,10 @@ export default {
       }
 
       return true
+    exitScoreboard(){
+      if(this.isAdmin)
+        this.$router.push({name: "Administration"})
+      else
     }
   }
 }

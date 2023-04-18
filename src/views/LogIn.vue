@@ -13,7 +13,7 @@
     <form @submit="enterWaitingRoom" class="form-control">
         <label>Enter room code to directly join a waiting room</label>
         <input  v-model="roomCode" type="text" placeholder="Enter Room Code">
-        <input type="button" value="Join waiting room" class="btn btn-block btn-submit" />
+        <input type="submit" value="Join waiting room" class="btn btn-block btn-submit" />
     </form>
 </template>
 
