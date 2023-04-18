@@ -38,6 +38,12 @@ export default {
         method: "POST",
         credentials: "include",
       });
+
+      if(res.status === 401){
+        this.$router.push({name: "LogIn"})
+        return
+      }
+
       console.log('createQuizSession')
       const data = await res.json()
       this.$emit('connect', data.sessionId)
@@ -48,6 +54,10 @@ export default {
         method: "GET",
         credentials: "include",
       })
+
+      if(res.status === 401)
+        this.$router.push( {name: "LogIn"} )
+
       const data = await res.json()
       return data;
     },
