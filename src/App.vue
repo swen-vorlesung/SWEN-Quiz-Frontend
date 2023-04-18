@@ -29,13 +29,12 @@ export default {
       newQuestionEvent: Object,
       timeOverEvent: Object,
       user: String,
-      token: String,
       sessionId: String,
       isAdmin: Boolean ,
       quizName: String,
     }
   },
-  emits: ['connect', 'setUser', 'setToken', 'setAdmin'],
+  emits: ['connect', 'setUser', 'setAdmin'],
   methods: {
     connect(sessionId) {
       this.connected = true;
@@ -74,9 +73,6 @@ export default {
     setUser(username) {
       this.user = username
     },
-    setToken(token) {
-      this.token = token
-    },
     setAdmin(isAdmin) {
       this.isAdmin = isAdmin
     },
@@ -94,8 +90,13 @@ export default {
     },
   },
   created() {
-    this.user = null
-    this.isAdmin = false
+    if(!this.$cookies.isKey("session_token")){
+      this.isAdmin = false;
+      this.user = null;
+    }else {
+      this.isAdmin = true
+    }
+    
     this.quizName = "Quiz App"
   }
 }

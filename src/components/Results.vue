@@ -7,6 +7,10 @@
     <div class='task' :key="result.nickname" v-for="result in sortedResults">
       <label>{{ result.nickname }} : {{ result.score }}</label>
     </div>
+    <br>
+    <div v-show="finished">
+      <input type="Button" @click="exitScoreboard" class="btn btn-block btn-submit" value="Exit Scoreboard"/>
+    </div>
   </header>
 </template>
 
@@ -59,6 +63,12 @@ export default {
         if(result.nickname === this.user)
           return place
       }
+    },
+    exitScoreboard(){
+      if(this.isAdmin)
+        this.$router.push({name: "Administration"})
+      else
+        this.$router.push({name: "LogIn"})
     }
   }
 }

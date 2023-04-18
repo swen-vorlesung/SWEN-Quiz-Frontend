@@ -47,7 +47,6 @@ export default {
     QuestionForm
   },
   props: {
-    token: String,
     quizId: Number
   },
   methods: {
@@ -73,8 +72,8 @@ export default {
 
       await fetch(`${this.$backendURL}/quizzes`, {
         method: httpMethod,
+        credentials: "include",
         headers: {
-          'Authorization': 'Bearer ' + this.token,
           'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify(data)
@@ -85,9 +84,7 @@ export default {
     async getQuiz(quizId){
       const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
         method: "GET",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        }
+        credentials: "include",
       }).catch(error => this.quizFormErrorEvent(error))
 
       const quiz = await res.json()
