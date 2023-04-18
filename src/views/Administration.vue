@@ -1,6 +1,7 @@
 <template>
   <div v-if="!showNewQuizForm">
     <h2>Administration</h2>
+    <h2 v-show="quizzes.length <= 0">No Quiz could be found</h2>
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
       <h3>{{ getQuizName(quiz.name) }}</h3>
       <div id="icon-div">
@@ -21,7 +22,9 @@ import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
 
 export default {
   name: 'Admin-Page',
-  expose: ["cancelQuizCreation"],
+  props: {
+    token: String
+  },
   data() {
     return {
       quizzes: [],
@@ -75,6 +78,10 @@ export default {
 
       this.quizId = null
       this.toggleShowNewQuizForm()
+    },
+    checkForErrors(response){
+      if(!response.ok)
+        throw Error("Error: " + response.status + ":" + response.statusText)
     },
     getQuizName(quizName){
       if(quizName.length < this.$maxQuizNameLength)
