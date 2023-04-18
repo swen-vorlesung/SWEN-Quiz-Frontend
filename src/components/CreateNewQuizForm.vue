@@ -48,7 +48,6 @@ export default {
     QuestionForm
   },
   props: {
-    token: String,
     quizId: Number
   },
   methods: {
@@ -74,8 +73,8 @@ export default {
 
       await fetch(`${this.$backendURL}/quizzes`, {
         method: httpMethod,
+        credentials: "include",
         headers: {
-          'Authorization': 'Bearer ' + this.token,
           'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify(data)
@@ -88,7 +87,7 @@ export default {
       await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
         method: "GET",
         headers: {
-          'Authorization': 'Bearer ' + this.token
+          credentials: "include"
         }
       })
       .then(this.checkForErrors)
@@ -96,10 +95,9 @@ export default {
         const quiz = await result.json()
         this.quizName = quiz.name
         this.updatingQuiz = true
-
+        
         quiz.questions.forEach(question => this.addQuestion(question))
-      })
-      .catch(error => this.quizFormErrorEvent(error))
+      }).catch(error => this.quizFormErrorEvent(error))
     },
     onCancel(){
       if(window.confirm("Are you sure you want to leave?\nYou will be loosing your entire progress")){

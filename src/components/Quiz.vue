@@ -37,7 +37,6 @@ export default {
     user: String,
     sessionId: String,
     countdown: Number,
-    token: String,
     isAdmin: Boolean,
     showCorrectAnswers: Boolean
   },
@@ -68,9 +67,9 @@ export default {
 
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/participants/${this.user}/answers`, {
         method: "POST",
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json;charset=utf-8',
-          'Authorization': 'Bearer ' + this.token
         },
         body: JSON.stringify(answers)
       });
