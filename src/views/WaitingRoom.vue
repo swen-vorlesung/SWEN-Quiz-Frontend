@@ -71,15 +71,19 @@ export default {
       })
       .then(this.checkForErrors)
       .then(this.redirectToGame)
-      .catch(this.$router.push( {name: "LogIn"} ))
+      .catch((error) => {
+        console.log(error)
+        this.$router.push({name: "LogIn"})
+      })
 
     },
     redirectToGame() {
       this.$router.push(`/quiz/${this.sessionId}/questions/`)
     },
     checkForErrors(result){
-      if(!result.ok && result.status === 401)
-        throw new Error("User is unauthorized")
+      if(!result.ok && result.status === 401){
+        throw new Error("Unauthenticated")
+      }
     }
   },
   created() {
