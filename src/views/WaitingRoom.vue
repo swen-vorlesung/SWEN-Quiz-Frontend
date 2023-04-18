@@ -9,7 +9,7 @@
     <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
   </form>
   <Participant :participants="participants"></Participant>
-  <button @click="startQuiz()" class="btn btn-block btn-start" v-show="isAdmin">Start Quiz</button>
+  <button @click="startQuiz()" class="btn btn-block btn-start" :disabled="disableStartingButton" v-show="isAdmin">Start Quiz</button>
 </template>
 
 <script>
@@ -31,7 +31,8 @@ export default {
     return {
       origin: window.location.origin,
       nickname: String,
-      participants: []
+      participants: [],
+      disableStartingButton: Boolean
     }
   },
   components: {
@@ -41,6 +42,7 @@ export default {
   watch: {
     participantsUpdatedEvent: function (event) {
       this.participants = event.participants.map(p => p.nickname)
+      this.disableStartingButton = this.participants.length < 2
     },
     quizStateUpdatedEvent: function () {
       this.redirectToGame();
@@ -83,6 +85,7 @@ export default {
       this.$emit('connect', this.$route.params.sessionId)
     }
     this.nickname = this.user
+    this.disableStartingButton = true
   }
 }
 
@@ -148,5 +151,10 @@ label {
 .btn-start {
   margin-top: 60px;
 }
+
+button:disabled {
+  background-color: grey;
+}
+
 </style>
     
