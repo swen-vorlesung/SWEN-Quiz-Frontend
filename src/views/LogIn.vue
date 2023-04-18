@@ -45,6 +45,7 @@ export default {
 
             if (data.token) {
                 this.setCookies(data.token)
+                this.$emit("setAdmin", true)
                 this.$router.push(`/admin`)
             } else {
                 alert("invalid Username or Password")
