@@ -7,7 +7,7 @@
     <div class='task' :key="result.nickname" v-for="result in sortedResults">
       <label>
         {{ result.nickname }} : {{ result.score }}
-        <label v-if="!this.isFirstRound() && !isAdmin">(+ {{ result.gainedPoints }})</label>
+        <label v-if="!this.isFirstRound()">(+ {{ result.gainedPoints }})</label>
       </label>
     </div>
   </header>
