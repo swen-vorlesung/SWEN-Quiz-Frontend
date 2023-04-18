@@ -59,13 +59,18 @@ export default {
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/next`, {
         method: "POST",
         credentials: "include",
-      });
+      })
+      .then(this.checkForErrors)
+      .catch(this.$router.push({name: "LogIn"}))
     },
     async getResults() {
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/showResults`, {
         method: "POST",
         credentials: "include",
-      }).then(this.showCorrectAnswers = false);
+      })
+      .then(this.checkForErrors)
+      .then(this.showCorrectAnswers = false)
+      .catch(this.$router.push({name: "LogIn"}))
     },
     countDownTimer() {
       if (this.countdown > 0) {
@@ -74,6 +79,10 @@ export default {
           this.countDownTimer()
         }, 1000)
       }
+    },
+    checkForErrors(result){
+      if(!result.ok && result.status === 401)
+        throw new Error("User is unauthorized")
     }
   },
   created() {

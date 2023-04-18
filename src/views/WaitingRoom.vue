@@ -68,11 +68,18 @@ export default {
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/start`, {
         method: "POST",
         credentials: "include",
-      });
-      this.redirectToGame()
+      })
+      .then(this.checkForErrors)
+      .then(this.redirectToGame)
+      .catch(this.$router.push( {name: "LogIn"} ))
+
     },
     redirectToGame() {
       this.$router.push(`/quiz/${this.sessionId}/questions/`)
+    },
+    checkForErrors(result){
+      if(!result.ok && result.status === 401)
+        throw new Error("User is unauthorized")
     }
   },
   created() {
