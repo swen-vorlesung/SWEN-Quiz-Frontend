@@ -96,7 +96,7 @@ export default {
   created() {
     this.user = null
     this.isAdmin = false
-    this.quizName = "Quiz-App"
+    this.quizName = "Quiz App"
   }
 }
 </script>
