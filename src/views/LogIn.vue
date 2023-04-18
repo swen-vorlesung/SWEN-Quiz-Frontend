@@ -44,9 +44,7 @@ export default {
             const data = await res.json()
 
             if (data.token) {
-                this.$emit('setUser', this.username)
-                this.$emit('setToken', data.token)
-                this.$emit('setAdmin', true)
+                this.setCookies(data.token)
                 this.$router.push(`/admin`)
             } else {
                 alert("invalid Username or Password")
@@ -61,6 +59,9 @@ export default {
                 return;
 
             this.$router.push(`/quiz/${this.roomCode}/waitingroom`)
+        },
+        setCookies(token){
+            this.$cookies.set("session_token", token, "1d", "/", "localhost", true, "None")
         }
     },
     created() {
