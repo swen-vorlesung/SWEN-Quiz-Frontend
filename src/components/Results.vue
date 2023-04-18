@@ -67,20 +67,22 @@ export default {
           return place
       }
     },
-    isFirstRound(){
-      for(const result of this.results){
+    isFirstRound() {
+      for (const result of this.results) {
         let score = result.score
         let gainedPoints = result.gainedPoints
 
-        if(score !== gainedPoints)
+        if (score !== gainedPoints)
           return false
       }
 
       return true
+    },
     exitScoreboard(){
       if(this.isAdmin)
         this.$router.push({name: "Administration"})
       else
+        this.$router.push({name: "LogIn"})
     }
   }
 }
