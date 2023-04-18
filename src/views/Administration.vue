@@ -3,7 +3,7 @@
     <h2>Administration</h2>
     <h2 v-show="quizzes.length <= 0">No Quiz could be found</h2>
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
-      <h3>{{ quiz.name }}</h3>
+      <h3>{{ getQuizName(quiz.name) }}</h3>
       <div id="icon-div">
         <i @click="createQuizSession(quiz.id)" class="fa-solid fa-button fa-plus"/>
         <i @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog"></i>
@@ -76,11 +76,16 @@ export default {
       if(!response.ok)
         throw Error("Error: " + response.status + ":" + response.statusText)
     },
+    getQuizName(quizName){
+      if(quizName.length < this.$maxQuizNameLength)
+        return quizName
+      else
+        return quizName.substring(0, this.$maxQuizNameLength) + "..."
+    }
   },
   async created() {
     this.showNewQuizForm = false
     this.quizId = null
-
     this.quizzes = await this.fetchQuizzes();
   }
 }
