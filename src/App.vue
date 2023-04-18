@@ -3,8 +3,8 @@
     <Header />
     <router-view :participantsUpdatedEvent="participantsUpdatedEvent" :quizStateUpdatedEvent="quizStateUpdatedEvent"
       :resultsUpdatedEvent="resultsUpdatedEvent" :newQuestionEvent="newQuestionEvent" :timeOverEvent="timeOverEvent" :connected="connected"
-      :user="user" :isAdmin="isAdmin" :sessionId="sessionId"
-      @connect="connect" @setUser="setUser" @setAdmin="setAdmin"></router-view>
+      :user="user" :token="token" :isAdmin="isAdmin" :sessionId="sessionId" :quizName="quizName"
+      @connect="connect" @setUser="setUser" @setToken="setToken" @setAdmin="setAdmin" @setQuizName="setQuizName"></router-view>
     <Footer />
   </div>
 </template>
@@ -30,7 +30,8 @@ export default {
       timeOverEvent: Object,
       user: String,
       sessionId: String,
-      isAdmin: Boolean 
+      isAdmin: Boolean ,
+      quizName: String,
     }
   },
   emits: ['connect', 'setUser', 'setAdmin'],
@@ -75,6 +76,12 @@ export default {
     setAdmin(isAdmin) {
       this.isAdmin = isAdmin
     },
+    setQuizName(quizName) {
+      if(quizName.length < this.$maxQuizNameLength)
+        this.quizName = quizName
+      else
+        this.quizName = quizName.substring(0, this.$maxQuizNameLength) + "..."
+    },
     disconnect() {
       if (this.stompClient) {
         this.stompClient.disconnect();
@@ -89,6 +96,8 @@ export default {
     }else {
       this.isAdmin = true
     }
+    
+    this.quizName = "Quiz App"
   }
 }
 </script>

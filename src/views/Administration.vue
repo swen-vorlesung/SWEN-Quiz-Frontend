@@ -5,8 +5,8 @@
     <div class='task' :key="quiz.id" v-for="quiz in quizzes">
       <h3>{{ getQuizName(quiz.name) }}</h3>
       <div id="icon-div">
-        <i @click="createQuizSession(quiz.id)" class="fa-solid fa-button fa-plus"/>
-        <i @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog"></i>
+        <i @click="createQuizSession(quiz.id, quiz.name)" class="fa-solid fa-button fa-plus"/>
+        <i id="cog-icon" @click="editQuiz(quiz.id)" class="fa fa-solid fa-button fa-cog icon"></i>
       </div>
     </div>
     <div id="add-new-quiz" class="task fa-solid fa-button" @click="this.toggleShowNewQuizForm">
@@ -36,7 +36,7 @@ export default {
     CreateNewQuizForm: CreateNewQuizForm
   },
   methods: {
-    async createQuizSession(quizId) {
+    async createQuizSession(quizId, quizName) {
       const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
         method: "POST",
         credentials: "include",
@@ -50,6 +50,7 @@ export default {
       console.log('createQuizSession')
       const data = await res.json()
       this.$emit('connect', data.sessionId)
+      this.$emit('setQuizName', quizName)
       this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
     },
     async fetchQuizzes() {
