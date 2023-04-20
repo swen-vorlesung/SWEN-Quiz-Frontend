@@ -21,7 +21,7 @@
         />
         <input type="button" @click="addEmptyQuestion" value="Another Question">
       </div>
-      <label id="errorMessage"> {{this.errorMessage}} </label>
+      <ErrorDisplay :error-message="this.errorMessage"/>
       <input type="submit" value="Submit" class="btn btn-block btn-submit bold"/>
       <input type="button" value="Cancel" @click="onCancel" class="btn btn-block .form btn_cancel bold" :class="{btn_delete: !updatingQuiz}"/>
       <input type="button" value="Delete Quiz" @click="deleteQuiz" v-if="updatingQuiz" class="btn btn-block .form btn_delete bold" />
@@ -31,6 +31,7 @@
 
 <script>
 import QuestionForm from "@/components/QuestionForm.vue";
+import ErrorDisplay from "@/components/ErrorDisplay.vue";
 
 export default {
   name: 'Create-New_Quiz',
@@ -45,6 +46,7 @@ export default {
     }
   },
   components: {
+    ErrorDisplay,
     QuestionForm
   },
   props: {
@@ -75,7 +77,8 @@ export default {
         method: httpMethod,
         credentials: "include",
         headers: {
-          'Content-Type': 'application/json;charset=utf-8'
+          'Content-Type': 'application/json;charset=utf-8',
+          credentials: "include"
         },
         body: JSON.stringify(data)
       })

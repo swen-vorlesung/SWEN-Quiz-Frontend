@@ -1,4 +1,5 @@
 <template>
+    <LoadingCircle v-show="showLoadingIndicator"> </LoadingCircle>
     <form @submit="onSubmit" class="add-form">
         <div class="form-control">
             <label>Nickname:</label>
@@ -9,6 +10,7 @@
         <input type="submit" value="Submit" class="btn btn-block btn-submit" />
         <button @click="useDemo"  class="btn btn-block btn-submit">Use Demo</button>
     </form>
+    <ErrorDisplay :error-message="this.errorMessage"/>
     <br>
     <form @submit="enterWaitingRoom" class="form-control">
         <label>Enter room code to directly join a waiting room</label>
@@ -19,37 +21,48 @@
 
 <script>
 
+import axios from "axios";
+import LoadingCircle from "@/components/LoadingCircle.vue";
+import ErrorDisplay from "@/components/ErrorDisplay.vue";
+
 export default {
     name: 'Login-Page',
+    components: {ErrorDisplay, LoadingCircle},
     data() {
         return {
             username: String,
             password: String,
             roomCode: String,
+            errorMessage: String,
+            showLoadingIndicator: Boolean,
         }
     },
     methods: {
         async onSubmit(e) {
             e.preventDefault()
 
-            const res = await fetch(`${this.$backendURL}/auth/login/`, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json;charset=utf-8' },
-                body: JSON.stringify(
-                    {
-                        'username': this.username,
-                        'password': this.password
-                    })
-            })
-            const data = await res.json()
+            this.showLoadingIndicator = true
 
-            if (data.token) {
-                this.setCookies(data.token)
+            await axios.post(`${this.$backendURL}/auth/login/`, JSON.stringify({
+                'username': this.username,
+                'password': this.password
+            }),{
+                headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                withCredentials: true
+            })
+            .then(() => {
                 this.$emit("setAdmin", true)
                 this.$router.push(`/admin`)
-            } else {
-                alert("invalid Username or Password")
-            }
+            })
+            .catch(error => {
+                if(error.code === "ERR_NETWORK")
+                    this.errorMessage = "Network Error"
+                else
+                    this.errorMessage = "Invalid Username or Password"
+
+                console.log(error)
+            })
+            .finally(() => this.showLoadingIndicator = false)
         },
         async useDemo() {
             this.username = 'DEMO'
@@ -69,6 +82,7 @@ export default {
         this.username = null
         this.password = null
         this.roomCode = null
+        this.showLoadingIndicator = false
     }
 }
 </script>

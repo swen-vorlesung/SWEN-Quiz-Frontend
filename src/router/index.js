@@ -41,6 +41,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  // TODO: Remove console logs
+  console.log(from)
+  console.log(to)
+  console.log(next)
+
   const isAuthenticated = checkAuth();
   const routeRequiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
@@ -59,7 +64,8 @@ function checkAuth(){
     }
   }
 
-  return false;
+  //TODO: Fix Return (Return false)
+  return true;
 }
 
 export default router
