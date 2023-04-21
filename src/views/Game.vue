@@ -10,6 +10,7 @@
 import Quiz from '../components/Quiz.vue'
 import Results from '../components/Results.vue'
 import LoadingCircle from "@/components/LoadingCircle.vue";
+import axios from "axios";
 
 export default {
   name: 'Game-Page',
@@ -63,16 +64,14 @@ export default {
     async nextQuestion() {
       this.showLoadingIndicator = true
 
-      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/next`, {
-        method: "POST",
-        credentials: "include",
+      await axios.post(`${this.$backendURL}/sessions/${this.sessionId}/quiz/next`, null, {
+        withCredentials: true
       })
-      .then(this.checkForErrors)
       .then(() => {
         this.showLoadingIndicator = false
         clearTimeout(this.timeOut)
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error)
         this.$router.push({name: "LogIn"})
       })
@@ -80,21 +79,18 @@ export default {
     async getResults() {
       this.showLoadingIndicator = true
 
-      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/showResults`, {
-        method: "POST",
-        credentials: "include",
+      await axios.post(`${this.$backendURL}/sessions/${this.sessionId}/quiz/showResults`, null, {
+        withCredentials: true
       })
-      .then(this.checkForErrors)
       .then(() => {
         this.showLoadingIndicator = false
         this.showCorrectAnswers = false
         clearTimeout(this.timeOut)
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error)
         this.$router.push({name: "LogIn"})
       })
-
     },
     countDownTimer() {
       if (this.countdown > 0) {
@@ -102,11 +98,6 @@ export default {
           this.countdown -= 1
           this.countDownTimer()
         }, 1000)
-      }
-    },
-    checkForErrors(result){
-      if(!result.ok && result.status === 401){
-        throw new Error("User is unauthorized")
       }
     }
   },
