@@ -1,4 +1,5 @@
 <template>
+  <LoadingCircle v-show="showLoadingIndicator"/>
   <Quiz :user="user" :sessionId="sessionId" :question="question" :showCorrectAnswers="showCorrectAnswers" :countdown="countdown" :isAdmin="isAdmin" v-show="!showResults"></Quiz>
   <Results :results="results" :finished="finished" :user="user" :isAdmin="isAdmin" v-show="showResults"></Results>
   <Button @click="getResults" class="btn btn-next-question" v-show="showCorrectAnswers && isAdmin">Show Results</Button>
@@ -8,30 +9,34 @@
 <script>
 import Quiz from '../components/Quiz.vue'
 import Results from '../components/Results.vue'
+import LoadingCircle from "@/components/LoadingCircle.vue";
 
 export default {
   name: 'Game-Page',
   props: {
+    user: String,
+    isAdmin: Boolean,
+    sessionId: String,
     connected: Boolean,
+    timeOverEvent: Object,
     newQuestionEvent: Object,
     resultsUpdatedEvent: Object,
-    timeOverEvent: Object,
-    user: String,
-    sessionId: String,
-    isAdmin: Boolean
   },
   components: {
     Quiz,
-    Results
+    Results,
+    LoadingCircle
   },
   data() {
     return {
-      question: Object,
       results: Object,
-      showResults: Boolean,
+      timeOut: Object,
+      question: Object,
+      countdown: Number,
       finished: Boolean,
+      showResults: Boolean,
       showCorrectAnswers: Boolean,
-      countdown: Number
+      showLoadingIndicator: Boolean,
     }
   },
   watch: {
@@ -56,23 +61,35 @@ export default {
   },
   methods: {
     async nextQuestion() {
+      this.showLoadingIndicator = true
+
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/next`, {
         method: "POST",
         credentials: "include",
       })
       .then(this.checkForErrors)
+      .then(() => {
+        this.showLoadingIndicator = false
+        clearTimeout(this.timeOut)
+      })
       .catch((error) => {
         console.log(error)
         this.$router.push({name: "LogIn"})
       })
     },
     async getResults() {
+      this.showLoadingIndicator = true
+
       await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/showResults`, {
         method: "POST",
         credentials: "include",
       })
       .then(this.checkForErrors)
-      .then(this.showCorrectAnswers = false)
+      .then(() => {
+        this.showLoadingIndicator = false
+        this.showCorrectAnswers = false
+        clearTimeout(this.timeOut)
+      })
       .catch((error) => {
         console.log(error)
         this.$router.push({name: "LogIn"})
@@ -81,7 +98,7 @@ export default {
     },
     countDownTimer() {
       if (this.countdown > 0) {
-        setTimeout(() => {
+        this.timeOut = setTimeout(() => {
           this.countdown -= 1
           this.countDownTimer()
         }, 1000)
@@ -96,6 +113,7 @@ export default {
   created() {
     this.showResults = false
     this.showCorrectAnswers = false
+    this.showLoadingIndicator = false
   }
 }
 </script>
