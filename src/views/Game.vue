@@ -1,6 +1,16 @@
 <template>
   <LoadingCircle v-show="showLoadingIndicator"/>
-  <Quiz :user="user" :sessionId="sessionId" :question="question" :showCorrectAnswers="showCorrectAnswers" :countdown="countdown" :isAdmin="isAdmin" v-show="!showResults"></Quiz>
+  <Quiz
+      :user="user"
+      :sessionId="sessionId"
+      :question="question"
+      :showCorrectAnswers="showCorrectAnswers"
+      :totalAmountOfParticipants="totalAmountOfParticipants"
+      :answeredParticipants="answeredParticipants"
+      :countdown="countdown"
+      :isAdmin="isAdmin"
+      v-show="!showResults"
+  ></Quiz>
   <Results :results="results" :finished="finished" :user="user" :isAdmin="isAdmin" v-show="showResults"></Results>
   <Button @click="getResults" class="btn btn-next-question" v-show="showCorrectAnswers && isAdmin">Show Results</Button>
   <Button @click="nextQuestion" class="btn btn-next-question" v-show="showResults && isAdmin" v-if="!finished">Next Question</Button>
@@ -22,6 +32,7 @@ export default {
     timeOverEvent: Object,
     newQuestionEvent: Object,
     resultsUpdatedEvent: Object,
+    answeredParticipantsEvent: Object,
   },
   components: {
     Quiz,
@@ -37,6 +48,8 @@ export default {
       finished: Boolean,
       showResults: Boolean,
       showCorrectAnswers: Boolean,
+      answeredParticipants: Number,
+      totalAmountOfParticipants: Number,
       showLoadingIndicator: Boolean,
     }
   },
@@ -46,6 +59,7 @@ export default {
       this.showResults = false
       this.question = event.question
       this.countdown = this.question.answerTime
+      this.totalAmountOfParticipants = event.amountOfParticipants
       this.countDownTimer()
     },
     resultsUpdatedEvent: function (event) {
@@ -54,6 +68,9 @@ export default {
       this.results = event.scores
       this.finished = event.finished
       this.showCorrectAnswers = false
+    },
+    answeredParticipantsEvent: function (event) {
+      this.answeredParticipants = event.answeredParticipants
     },
     timeOverEvent: function(event) {
       console.log(event)
@@ -75,6 +92,8 @@ export default {
         console.log(error)
         this.$router.push({name: "LogIn"})
       })
+
+      this.answeredParticipants = 0
     },
     async getResults() {
       this.showLoadingIndicator = true
@@ -104,6 +123,8 @@ export default {
   created() {
     this.showResults = false
     this.showCorrectAnswers = false
+    this.answeredParticipants = 0
+    this.totalAmountOfParticipants = 0
     this.showLoadingIndicator = false
   }
 }

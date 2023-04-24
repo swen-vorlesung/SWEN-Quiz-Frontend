@@ -1,7 +1,11 @@
 <template>
   <header>
     <div :class="{'blur-content': showWaitingScreen}">
-      <h3>{{ question.question }}</h3>
+      <h3>
+        {{ question.question }}
+        <br>
+        ({{this.answeredParticipants}}\{{this.totalAmountOfParticipants}})
+      </h3>
       <form @submit="onSubmit" class="add-form">
         <div class="form-control">
           <div class='task' :key="answer.id" v-for="answer in question.answers"
@@ -39,6 +43,10 @@ export default {
     question: Object,
     sessionId: String,
     countdown: Number,
+    isAdmin: Boolean,
+    showCorrectAnswers: Boolean,
+    answeredParticipants: Number,
+    totalAmountOfParticipants: Number,
     showCorrectAnswers: Boolean
   },
   components: {

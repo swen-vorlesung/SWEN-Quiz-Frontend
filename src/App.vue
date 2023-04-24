@@ -1,8 +1,10 @@
 <template>
   <div class="container">
     <Header />
-    <router-view :participantsUpdatedEvent="participantsUpdatedEvent" :quizStateUpdatedEvent="quizStateUpdatedEvent"
-      :resultsUpdatedEvent="resultsUpdatedEvent" :newQuestionEvent="newQuestionEvent" :timeOverEvent="timeOverEvent" :connected="connected"
+    <router-view :participantsUpdatedEvent="participantsUpdatedEvent"
+      :answeredParticipantsEvent="answeredParticipantsEvent"
+      :quizStateUpdatedEvent="quizStateUpdatedEvent" :resultsUpdatedEvent="resultsUpdatedEvent"
+      :newQuestionEvent="newQuestionEvent" :timeOverEvent="timeOverEvent" :connected="connected"
       :user="user" :token="token" :isAdmin="isAdmin" :sessionId="sessionId" :quizName="quizName"
       @connect="connect" @setUser="setUser" @setToken="setToken" @setAdmin="setAdmin" @setQuizName="setQuizName"></router-view>
     <Footer />
@@ -23,15 +25,16 @@ export default {
   },
   data() {
     return {
+      answeredParticipantsEvent: Object,
       participantsUpdatedEvent: Object,
       quizStateUpdatedEvent: Object,
       resultsUpdatedEvent: Object,
       newQuestionEvent: Object,
       timeOverEvent: Object,
-      user: String,
       sessionId: String,
-      isAdmin: Boolean ,
+      isAdmin: Boolean,
       quizName: String,
+      user: String,
     }
   },
   emits: ['connect', 'setUser', 'setAdmin'],
@@ -58,6 +61,9 @@ export default {
             }
             if (event.eventName === 'NewQuestionEvent') {
               this.newQuestionEvent = event;
+            }
+            if(event.eventName === "SendAnsweredParticipantsEvent"){
+              this.answeredParticipantsEvent = event;
             }
             if (event.eventName === 'TimeOverEvent'){
               this.timeOverEvent = event;
