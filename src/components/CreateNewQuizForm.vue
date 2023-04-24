@@ -61,6 +61,11 @@ export default {
     async onSubmit(e) {
       e.preventDefault()
 
+      if(this.quizName.length > this.$maxQuizNameLength){
+        this.quizFormErrorEvent(`Quiz name can only be ${this.$maxQuizNameLength} characters long`)
+        return
+      }
+
       let httpMethod = "POST"
       this.$refs.questionForms.forEach(question => question.getAnswers())
 
