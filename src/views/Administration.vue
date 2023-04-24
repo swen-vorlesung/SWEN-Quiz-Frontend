@@ -1,4 +1,5 @@
 <template>
+  <LoadingCircle v-show="showLoadingIndicator"/>
   <div v-if="!showNewQuizForm">
     <h2>Administration</h2>
     <h2 v-show="quizzes.length <= 0">No Quiz could be found</h2>
@@ -19,6 +20,7 @@
 
 <script>
 import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
+import LoadingCircle from "@/components/LoadingCircle.vue";
 
 export default {
   name: 'Admin-Page',
@@ -29,14 +31,18 @@ export default {
     return {
       quizzes: [],
       showNewQuizForm: Boolean,
-      quizId: Number
+      quizId: Number,
+      showLoadingIndicator: Boolean
     }
   },
   components: {
+    LoadingCircle,
     CreateNewQuizForm: CreateNewQuizForm
   },
   methods: {
     async createQuizSession(quizId, quizName) {
+      this.showLoadingIndicator = true
+
       const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
         method: "POST",
         credentials: "include",
@@ -63,6 +69,7 @@ export default {
         this.$router.push( {name: "LogIn"} )
 
       const data = await res.json()
+      this.showLoadingIndicator = false
       return data;
     },
     toggleShowNewQuizForm(){
@@ -89,6 +96,9 @@ export default {
       else
         return quizName.substring(0, this.$maxQuizNameLength) + "..."
     }
+  },
+  mounted() {
+    this.showLoadingIndicator = true
   },
   async created() {
     this.showNewQuizForm = false

@@ -1,4 +1,5 @@
 <template>
+  <LoadingCircle v-show="showLoadingIndicator"/>
   <body>
     <h2>Create new Quiz</h2>
     <form @submit="onSubmit" class="add-form">
@@ -32,20 +33,23 @@
 <script>
 import QuestionForm from "@/components/QuestionForm.vue";
 import ErrorDisplay from "@/components/ErrorDisplay.vue";
+import LoadingCircle from "@/components/LoadingCircle.vue";
 
 export default {
   name: 'Create-New_Quiz',
   data() {
     return {
       quizName: String,
-      errorMessage: String,
-      quizCreationError: Boolean,
-      updatingQuiz: Boolean,
-      questionIDCounter: Number,
       questions: [],
+      errorMessage: String,
+      updatingQuiz: Boolean,
+      quizCreationError: Boolean,
+      questionIDCounter: Number,
+      showLoadingIndicator: Boolean,
     }
   },
   components: {
+    LoadingCircle,
     ErrorDisplay,
     QuestionForm
   },
@@ -63,6 +67,8 @@ export default {
         this.quizCreationError = false
         return
       }
+
+      this.showLoadingIndicator = true
 
       if(this.updatingQuiz)
         httpMethod = "PUT"
@@ -98,7 +104,7 @@ export default {
         const quiz = await result.json()
         this.quizName = quiz.name
         this.updatingQuiz = true
-        
+        this.showLoadingIndicator = false
         quiz.questions.forEach(question => this.addQuestion(question))
       }).catch(error => this.quizFormErrorEvent(error))
     },
@@ -162,10 +168,14 @@ export default {
     this.updatingQuiz = false
     this.questions = []
 
-    if(this.quizId != null)
+    if(this.quizId != null){
+      this.showLoadingIndicator = true
       this.getQuiz(this.quizId)
-    else
+    }
+    else{
+      this.showLoadingIndicator = false
       this.addEmptyQuestion()
+    }
 
   }
 }
