@@ -34,6 +34,7 @@
 import QuestionForm from "@/components/QuestionForm.vue";
 import ErrorDisplay from "@/components/ErrorDisplay.vue";
 import LoadingCircle from "@/components/LoadingCircle.vue";
+import axios from "axios";
 
 export default {
   name: 'Create-New_Quiz',
@@ -79,29 +80,25 @@ export default {
         questions: this.questions
       }
 
-      await fetch(`${this.$backendURL}/quizzes`, {
+      await axios({
         method: httpMethod,
-        credentials: "include",
+        url: `${this.$backendURL}/quizzes`,
+        data: data,
+        withCredentials: true,
         headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-          credentials: "include"
-        },
-        body: JSON.stringify(data)
-      })
-      .then(this.checkForErrors)
-      .then(() => this.$emit('finished_quiz_creation', true))
-      .catch(error => this.quizFormErrorEvent(error))
-    },
-    async getQuiz(quizId){
-      await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
-        method: "GET",
-        headers: {
-          credentials: "include"
+          'Content-Type': 'application/json;charset=utf-8'
         }
       })
-      .then(this.checkForErrors)
+      .then(() => this.$emit('finished_quiz_creation', true))
+      .catch(error => this.quizFormErrorEvent(error))
+
+    },
+    async getQuiz(quizId){
+      await axios.get(`${this.$backendURL}/quizzes/${quizId}`, {
+        withCredentials: true
+      })
       .then(async result => {
-        const quiz = await result.json()
+        const quiz = await result.data
         this.quizName = quiz.name
         this.updatingQuiz = true
         this.showLoadingIndicator = false
@@ -142,13 +139,9 @@ export default {
       if(!window.confirm("Are you sure you want to delete this quiz?"))
         return
 
-      await fetch(`${this.$backendURL}/quizzes/${this.quizId}`, {
-        method: "DELETE",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
+      await axios.delete(`${this.$backendURL}/quizzes/${this.quizId}`, {
+        withCredentials: true,
       })
-      .then(this.checkForErrors)
       .then(() => this.$emit('finished_quiz_creation', true))
       .catch(error => console.log(error))
     },
@@ -250,12 +243,4 @@ label {
 .bold {
   font-weight: bold;
 }
-
-#errorMessage {
-  display: block;
-  color: red;
-  text-align: center;
-  width: 100%;
-}
-
 </style>

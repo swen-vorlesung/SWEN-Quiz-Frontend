@@ -7,6 +7,7 @@
       <label>Nickname:</label>
       <input type="text" v-model="nickname" name="nickname" placeholder="Add NickName"/>
     </div>
+    <ErrorDisplay :error-message="errorMessage"/>
     <input type="submit" value="Submit" class="btn btn-block btn-submit"/>
   </form>
   <Participant :participants="participants"></Participant>
@@ -14,30 +15,34 @@
 </template>
 
 <script>
+import axios from "axios";
 import QrcodeVue from 'qrcode.vue'
 import Participant from '../components/Participant.vue'
+import ErrorDisplay from "@/components/ErrorDisplay.vue";
 
 export default {
   name: 'Waiting-Room',
   props: {
-    connected: Boolean,
-    participantsUpdatedEvent: Object,
-    quizStateUpdatedEvent: Object,
     user: String,
-    sessionId: String,
     token: String,
     isAdmin: Boolean,
     quizName: String,
+    sessionId: String,
+    connected: Boolean,
+    quizStateUpdatedEvent: Object,
+    participantsUpdatedEvent: Object,
   },
   data() {
     return {
-      origin: window.location.origin,
       nickname: String,
       participants: [],
+      errorMessage: String,
+      origin: window.location.origin,
       disableStartingButton: Boolean
     }
   },
   components: {
+    ErrorDisplay,
     QrcodeVue,
     Participant
   },
@@ -55,40 +60,31 @@ export default {
       e.preventDefault()
 
       if (!this.nickname) {
-        alert('Please add a NickName')
+        this.errorMessage = "Please add a Nickname"
         return
       }
 
-      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/participants/`, {
-        method: "POST",
+      await axios.post(`${this.$backendURL}/sessions/${this.sessionId}/participants/`, {
+        'nickname': this.nickname
+      }, {
         headers: {
           'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify({'nickname': this.nickname})
-      });
-
-      this.$emit('setUser', this.nickname)
+        }
+      })
+      .then( () => this.$emit('setUser', this.nickname))
     },
     async startQuiz() {
-      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/quiz/start`, {
-        method: "POST",
-        credentials: "include",
+      await axios.post(`${this.$backendURL}/sessions/${this.sessionId}/quiz/start`, null, {
+        withCredentials: true
       })
-      .then(this.checkForErrors)
       .then(this.redirectToGame)
-      .catch((error) => {
+      .catch(error => {
         console.log(error)
         this.$router.push({name: "LogIn"})
       })
-
     },
     redirectToGame() {
       this.$router.push(`/quiz/${this.sessionId}/questions/`)
-    },
-    checkForErrors(result){
-      if(!result.ok && result.status === 401){
-        throw new Error("Unauthenticated")
-      }
     }
   },
   created() {

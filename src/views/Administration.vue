@@ -21,6 +21,7 @@
 <script>
 import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
 import LoadingCircle from "@/components/LoadingCircle.vue";
+import axios from "axios";
 
 export default {
   name: 'Admin-Page',
@@ -43,32 +44,31 @@ export default {
     async createQuizSession(quizId, quizName) {
       this.showLoadingIndicator = true
 
-      const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if(res.status === 401){
-        this.$router.push({name: "LogIn"})
-        return
-      }
-
-      console.log('createQuizSession')
-      const data = await res.json()
-      this.$emit('connect', data.sessionId)
-      this.$emit('setQuizName', quizName)
-      this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
+      await axios.post(`${this.$backendURL}/quizzes/${quizId}`, null, {
+        withCredentials: true
+      })
+      .then(result => {
+        console.log('createQuizSession')
+        const data = result.data
+        this.$emit('connect', data.sessionId)
+        this.$emit('setQuizName', quizName)
+        this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
+      })
+      .catch( error => {
+        if(error.status === 401)
+          this.$router.push({name: "LogIn"})
+      })
     },
     async fetchQuizzes() {
-      const res = await fetch(`${this.$backendURL}/quizzes`, {
-        method: "GET",
-        credentials: "include",
+      const result = await axios.get(`${this.$backendURL}/quizzes`, {
+        withCredentials: true
+      })
+      .catch(error => {
+        if(error.status === 401)
+          this.$router.push( {name: "LogIn"} )
       })
 
-      if(res.status === 401)
-        this.$router.push( {name: "LogIn"} )
-
-      const data = await res.json()
+      const data = result.data
       this.showLoadingIndicator = false
       return data;
     },
@@ -85,10 +85,6 @@ export default {
 
       this.quizId = null
       this.toggleShowNewQuizForm()
-    },
-    checkForErrors(response){
-      if(!response.ok)
-        throw Error("Error: " + response.status + ":" + response.statusText)
     },
     getQuizName(quizName){
       if(quizName.length < this.$maxQuizNameLength)

@@ -73,9 +73,6 @@ export default {
                 return;
 
             this.$router.push(`/quiz/${this.roomCode}/waitingroom`)
-        },
-        setCookies(token){
-            this.$cookies.set("session_token", token, "1d", "/", window.location.hostname, true, "None")
         }
     },
     created() {
