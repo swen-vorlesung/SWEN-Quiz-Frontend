@@ -33,18 +33,21 @@
 <script>
 
 import Counter from "@/components/Counter";
+import axios from "axios";
 
 export default {
   name: 'Quiz-Item',
   props: {
-    question: Object,
     user: String,
+    isAdmin: Boolean,
+    question: Object,
     sessionId: String,
     countdown: Number,
     isAdmin: Boolean,
     showCorrectAnswers: Boolean,
     answeredParticipants: Number,
     totalAmountOfParticipants: Number,
+    showCorrectAnswers: Boolean
   },
   components: {
     Counter
@@ -71,14 +74,12 @@ export default {
       answers.answers = []
       this.answerIds.forEach((element) => answers.answers.push({id: element}))
 
-      await fetch(`${this.$backendURL}/sessions/${this.sessionId}/participants/${this.user}/answers`, {
-        method: "POST",
-        credentials: "include",
+      await axios.post(`${this.$backendURL}/sessions/${this.sessionId}/participants/${this.user}/answers`, answers, {
         headers: {
           'Content-Type': 'application/json;charset=utf-8',
-        },
-        body: JSON.stringify(answers)
-      });
+        }
+      })
+
       this.answerIds = []
 
       if(!this.showCorrectAnswers)

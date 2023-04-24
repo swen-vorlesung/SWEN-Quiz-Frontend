@@ -1,4 +1,5 @@
 <template>
+  <LoadingCircle v-show="showLoadingIndicator"/>
   <div v-if="!showNewQuizForm">
     <h2>Administration</h2>
     <h2 v-show="quizzes.length <= 0">No Quiz could be found</h2>
@@ -19,6 +20,8 @@
 
 <script>
 import CreateNewQuizForm from "@/components/CreateNewQuizForm.vue";
+import LoadingCircle from "@/components/LoadingCircle.vue";
+import axios from "axios";
 
 export default {
   name: 'Admin-Page',
@@ -29,40 +32,44 @@ export default {
     return {
       quizzes: [],
       showNewQuizForm: Boolean,
-      quizId: Number
+      quizId: Number,
+      showLoadingIndicator: Boolean
     }
   },
   components: {
+    LoadingCircle,
     CreateNewQuizForm: CreateNewQuizForm
   },
   methods: {
     async createQuizSession(quizId, quizName) {
-      const res = await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
-        method: "POST",
-        credentials: "include",
-      });
+      this.showLoadingIndicator = true
 
-      if(res.status === 401){
-        this.$router.push({name: "LogIn"})
-        return
-      }
-
-      console.log('createQuizSession')
-      const data = await res.json()
-      this.$emit('connect', data.sessionId)
-      this.$emit('setQuizName', quizName)
-      this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
+      await axios.post(`${this.$backendURL}/quizzes/${quizId}`, null, {
+        withCredentials: true
+      })
+      .then(result => {
+        console.log('createQuizSession')
+        const data = result.data
+        this.$emit('connect', data.sessionId)
+        this.$emit('setQuizName', quizName)
+        this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
+      })
+      .catch( error => {
+        if(error.status === 401)
+          this.$router.push({name: "LogIn"})
+      })
     },
     async fetchQuizzes() {
-      const res = await fetch(`${this.$backendURL}/quizzes`, {
-        method: "GET",
-        credentials: "include",
+      const result = await axios.get(`${this.$backendURL}/quizzes`, {
+        withCredentials: true
+      })
+      .catch(error => {
+        if(error.status === 401)
+          this.$router.push( {name: "LogIn"} )
       })
 
-      if(res.status === 401)
-        this.$router.push( {name: "LogIn"} )
-
-      const data = await res.json()
+      const data = result.data
+      this.showLoadingIndicator = false
       return data;
     },
     toggleShowNewQuizForm(){
@@ -79,16 +86,15 @@ export default {
       this.quizId = null
       this.toggleShowNewQuizForm()
     },
-    checkForErrors(response){
-      if(!response.ok)
-        throw Error("Error: " + response.status + ":" + response.statusText)
-    },
     getQuizName(quizName){
       if(quizName.length < this.$maxQuizNameLength)
         return quizName
       else
         return quizName.substring(0, this.$maxQuizNameLength) + "..."
     }
+  },
+  mounted() {
+    this.showLoadingIndicator = true
   },
   async created() {
     this.showNewQuizForm = false

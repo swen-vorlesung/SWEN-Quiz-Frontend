@@ -1,4 +1,5 @@
 <template>
+  <LoadingCircle v-show="showLoadingIndicator"/>
   <body>
     <h2>Create new Quiz</h2>
     <form @submit="onSubmit" class="add-form">
@@ -32,20 +33,24 @@
 <script>
 import QuestionForm from "@/components/QuestionForm.vue";
 import ErrorDisplay from "@/components/ErrorDisplay.vue";
+import LoadingCircle from "@/components/LoadingCircle.vue";
+import axios from "axios";
 
 export default {
   name: 'Create-New_Quiz',
   data() {
     return {
       quizName: String,
-      errorMessage: String,
-      quizCreationError: Boolean,
-      updatingQuiz: Boolean,
-      questionIDCounter: Number,
       questions: [],
+      errorMessage: String,
+      updatingQuiz: Boolean,
+      quizCreationError: Boolean,
+      questionIDCounter: Number,
+      showLoadingIndicator: Boolean,
     }
   },
   components: {
+    LoadingCircle,
     ErrorDisplay,
     QuestionForm
   },
@@ -56,6 +61,11 @@ export default {
     async onSubmit(e) {
       e.preventDefault()
 
+      if(this.quizName.length > this.$maxQuizNameLength){
+        this.quizFormErrorEvent(`Quiz name can only be ${this.$maxQuizNameLength} characters long`)
+        return
+      }
+
       let httpMethod = "POST"
       this.$refs.questionForms.forEach(question => question.getAnswers())
 
@@ -63,6 +73,8 @@ export default {
         this.quizCreationError = false
         return
       }
+
+      this.showLoadingIndicator = true
 
       if(this.updatingQuiz)
         httpMethod = "PUT"
@@ -73,32 +85,28 @@ export default {
         questions: this.questions
       }
 
-      await fetch(`${this.$backendURL}/quizzes`, {
+      await axios({
         method: httpMethod,
-        credentials: "include",
+        url: `${this.$backendURL}/quizzes`,
+        data: data,
+        withCredentials: true,
         headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-          credentials: "include"
-        },
-        body: JSON.stringify(data)
-      })
-      .then(this.checkForErrors)
-      .then(() => this.$emit('finished_quiz_creation', true))
-      .catch(error => this.quizFormErrorEvent(error))
-    },
-    async getQuiz(quizId){
-      await fetch(`${this.$backendURL}/quizzes/${quizId}`, {
-        method: "GET",
-        headers: {
-          credentials: "include"
+          'Content-Type': 'application/json;charset=utf-8'
         }
       })
-      .then(this.checkForErrors)
+      .then(() => this.$emit('finished_quiz_creation', true))
+      .catch(error => this.quizFormErrorEvent(error))
+
+    },
+    async getQuiz(quizId){
+      await axios.get(`${this.$backendURL}/quizzes/${quizId}`, {
+        withCredentials: true
+      })
       .then(async result => {
-        const quiz = await result.json()
+        const quiz = await result.data
         this.quizName = quiz.name
         this.updatingQuiz = true
-        
+        this.showLoadingIndicator = false
         quiz.questions.forEach(question => this.addQuestion(question))
       }).catch(error => this.quizFormErrorEvent(error))
     },
@@ -136,13 +144,9 @@ export default {
       if(!window.confirm("Are you sure you want to delete this quiz?"))
         return
 
-      await fetch(`${this.$backendURL}/quizzes/${this.quizId}`, {
-        method: "DELETE",
-        headers: {
-          'Authorization': 'Bearer ' + this.token
-        },
+      await axios.delete(`${this.$backendURL}/quizzes/${this.quizId}`, {
+        withCredentials: true,
       })
-      .then(this.checkForErrors)
       .then(() => this.$emit('finished_quiz_creation', true))
       .catch(error => console.log(error))
     },
@@ -162,10 +166,14 @@ export default {
     this.updatingQuiz = false
     this.questions = []
 
-    if(this.quizId != null)
+    if(this.quizId != null){
+      this.showLoadingIndicator = true
       this.getQuiz(this.quizId)
-    else
+    }
+    else{
+      this.showLoadingIndicator = false
       this.addEmptyQuestion()
+    }
 
   }
 }
@@ -240,12 +248,4 @@ label {
 .bold {
   font-weight: bold;
 }
-
-#errorMessage {
-  display: block;
-  color: red;
-  text-align: center;
-  width: 100%;
-}
-
 </style>
