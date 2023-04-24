@@ -43,8 +43,6 @@ export default {
     question: Object,
     sessionId: String,
     countdown: Number,
-    isAdmin: Boolean,
-    showCorrectAnswers: Boolean,
     answeredParticipants: Number,
     totalAmountOfParticipants: Number,
     showCorrectAnswers: Boolean
