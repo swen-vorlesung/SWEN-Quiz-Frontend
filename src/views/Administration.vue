@@ -55,7 +55,7 @@ export default {
         this.$router.push(`/quiz/${data.sessionId}/waitingroom`)
       })
       .catch( error => {
-        if(error.status === 401)
+        if(error.response.status === 401)
           this.$router.push({name: "LogIn"})
       })
     },
@@ -64,7 +64,7 @@ export default {
         withCredentials: true
       })
       .catch(error => {
-        if(error.status === 401)
+        if(error.response.status === 401)
           this.$router.push( {name: "LogIn"} )
       })
 

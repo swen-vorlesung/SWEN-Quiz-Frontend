@@ -55,7 +55,7 @@ export default {
                 this.$router.push(`/admin`)
             })
             .catch(error => {
-                if(error.code === "ERR_NETWORK")
+                if(error.response.code === 401)
                     this.errorMessage = "Network Error"
                 else
                     this.errorMessage = "Invalid Username or Password"

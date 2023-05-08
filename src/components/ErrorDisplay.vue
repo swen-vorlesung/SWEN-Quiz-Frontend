@@ -17,9 +17,6 @@ export default {
     errorMessage(newError){
       this.showError = (newError != null)
     }
-  },
-  created() {
-    console.log("Created Error")
   }
 }
 </script>
